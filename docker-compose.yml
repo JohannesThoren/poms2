@@ -96,5 +96,76 @@ services:
       ingestion:
         condition: service_started
 
+  # Digpro "Outage Map" family: one image, one container per confirmed
+  # company, distinguished only by env vars. See
+  # crates/adapters/digpro/src/lib.rs for how these were found.
+  vaxjo-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/digpro/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: vaxjo
+      DIGPRO_BASE_URL: https://driftinformation.veab.se
+      DIGPRO_CUST: vax
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  lerum-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/digpro/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: lerum
+      DIGPRO_BASE_URL: https://lerumel.lerum.se
+      DIGPRO_CUST: lme
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  vasterbergslagens-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/digpro/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: vasterbergslagens
+      DIGPRO_BASE_URL: https://status.vbenergi.se
+      DIGPRO_CUST: vbe
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  partille-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/digpro/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: partille
+      DIGPRO_BASE_URL: https://avbrottskarta.partilleenergi.se
+      DIGPRO_CUST: pen
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
 volumes:
   poms_pgdata:

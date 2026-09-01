@@ -23,6 +23,10 @@ pub enum Provider {
     Jamtkraft,
     TekniskaVerken,
     Oresundskraft,
+    Vaxjo,
+    Lerum,
+    Vasterbergslagens,
+    Partille,
 }
 
 impl Provider {
@@ -34,6 +38,10 @@ impl Provider {
             Provider::Jamtkraft => "jamtkraft",
             Provider::TekniskaVerken => "tekniska_verken",
             Provider::Oresundskraft => "oresundskraft",
+            Provider::Vaxjo => "vaxjo",
+            Provider::Lerum => "lerum",
+            Provider::Vasterbergslagens => "vasterbergslagens",
+            Provider::Partille => "partille",
         }
     }
 }

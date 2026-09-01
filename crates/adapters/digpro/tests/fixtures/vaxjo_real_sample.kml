@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.w3.org/2005/Atom" xmlns:ns3="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <NetworkLinkControl>
+        <expires>2026-08-30T13:34:00</expires>
+    </NetworkLinkControl>
+    <Document>
+        <Style id="active_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../outagemap/fpp_red.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF1400FF</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>321400FF</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Verifierat      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[current_affected_customers]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Planerad sluttid: $[planned_restored_time]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Style id="planned_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../outagemap/fpp_red.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF14C3FF</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>3714C3FF</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Planerad      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[current_affected_customers]&lt;br/&gt;   Rapporterad: $[reported]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Sluttid: $[restored]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Style id="inactive_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../outagemap/fpp_green.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF14B45A</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>3714B45A</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Åtgärdad      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[current_affected_customers]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Sluttid: $[restored]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Placemark>
+            <styleUrl>#planned_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>2</value>
+                </Data>
+                <Data name="type">
+                    <value>1</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>3</value>
+                </Data>
+                <Data name="occurred">
+                    <value></value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-08-31 10:47</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value>2026-09-04 12:00</value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value>2026-09-04 08:00</value>
+                </Data>
+                <Data name="restored">
+                    <value></value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>true</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>252707031</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>0</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>78499</value>
+                </Data>
+                <Data name="note_external">
+                    <value>Strömavbrott på grund av underhållsarbete.</value>
+                </Data>
+            </ExtendedData>
+            <Point>
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates>14.859410778029128,56.90826647386205,0.0</coordinates>
+            </Point>
+        </Placemark>
+    </Document>
+</kml>
