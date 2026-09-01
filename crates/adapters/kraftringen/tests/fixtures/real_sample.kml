@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.w3.org/2005/Atom" xmlns:ns3="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <NetworkLinkControl>
+        <expires>2026-08-31T23:08:01</expires>
+    </NetworkLinkControl>
+    <Document>
+        <Style id="active_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../operator/red2.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF1400FF</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>321400FF</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Verifierat      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[current_affected_customers]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Planerad sluttid: $[planned_restored_time]&lt;br/&gt;   Sluttid: $[restored]&lt;br/&gt;   Information: $[note_external]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Style id="planned_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../operator/red2.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF14C3FF</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>3714C3FF</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Planerad      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[current_affected_customers]&lt;br/&gt;   Rapporterad: $[reported]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Sluttid: $[restored]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Style id="inactive_outage">
+            <IconStyle>
+                <Icon>
+                    <href>../operator/green2.png</href>
+                </Icon>
+            </IconStyle>
+            <LineStyle>
+                <color>FF14B45A</color>
+                <width>1.5</width>
+            </LineStyle>
+            <PolyStyle>
+                <color>3714B45A</color>
+                <fill>true</fill>
+                <outline>true</outline>
+            </PolyStyle>
+            <BalloonStyle>
+                <text>  &lt;div style="font-family: Arial, sans-serif; margin-bottom: 0em"&gt;      &lt;div style="font-weight: bold; font-size: 1.15em; color:#E58224"&gt;        El - Åtgärdad      &lt;/div&gt;      &lt;div style="font-size: 0.95em"&gt;        Drabbade kunder: $[previously_affected_customers]&lt;br/&gt;   Uppstod: $[occurred]&lt;br/&gt;   Planerad sluttid: $[planned_restored_time]&lt;br/&gt;   Sluttid: $[restored]&lt;br/&gt;   Information: $[note_external]      &lt;/div&gt;   &lt;/div&gt;</text>
+            </BalloonStyle>
+        </Style>
+        <Placemark>
+            <styleUrl>#inactive_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>4</value>
+                </Data>
+                <Data name="type">
+                    <value>1</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>10</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="occurred">
+                    <value>2026-08-31 22:33</value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-08-31 22:33</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value>2026-09-01 03:30</value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value>2026-08-31 22:30</value>
+                </Data>
+                <Data name="restored">
+                    <value>2026-09-01 02:03</value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>false</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>692032732</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>1</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>118229</value>
+                </Data>
+                <Data name="note_external">
+                    <value></value>
+                </Data>
+            </ExtendedData>
+            <MultiGeometry>
+                <Polygon>
+                    <extrude>true</extrude>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>13.17053245875068,55.71076027725382,0.0 13.170481940212182,55.71086402851774,0.0 13.170351741952365,55.710942607075886,0.0 13.167330934800312,55.7120522268017,0.0 13.167139521184628,55.71208810102873,0.0 13.166941543077616,55.71206636963939,0.0 13.166787884048647,55.71199261795955,0.0 13.166718036500855,55.71188580130966,0.0 13.166749951518366,55.711773373039975,0.0 13.168260000614117,55.70983930815157,0.0 13.168375544612317,55.70975449868652,0.0 13.168547477956658,55.709709495623066,0.0 13.168736780995763,55.7097145122185,0.0 13.168900492270005,55.70976840998409,0.0 13.170411255087824,55.71059285949069,0.0 13.170503024900952,55.71066937602335,0.0 13.17053245875068,55.71076027725382,0.0</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>13.168644567327558,55.710910750374296,0.0</coordinates>
+                </Point>
+            </MultiGeometry>
+        </Placemark>
+        <Placemark>
+            <styleUrl>#inactive_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>4</value>
+                </Data>
+                <Data name="type">
+                    <value>1</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>56</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="occurred">
+                    <value>2026-09-01 09:02</value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-09-01 09:02</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value>2026-09-01 14:00</value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value>2026-09-01 09:00</value>
+                </Data>
+                <Data name="restored">
+                    <value>2026-09-01 12:56</value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>false</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>692036264</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>1</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>118329</value>
+                </Data>
+                <Data name="note_external">
+                    <value></value>
+                </Data>
+            </ExtendedData>
+            <MultiGeometry>
+                <Polygon>
+                    <extrude>true</extrude>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>13.176889681417206,55.72434358024044,0.0 13.176830371269537,55.724455764857346,0.0 13.176542526727584,55.72471857931845,0.0 13.176413253493818,55.72479153626065,0.0 13.176239822913034,55.724824174521636,0.0 13.17605883595948,55.7248096060815,0.0 13.175908488381086,55.724750905489806,0.0 13.175820509475113,55.724660460976864,0.0 13.175702514940676,55.724420123205135,0.0 13.175689184518639,55.72434331722582,0.0 13.1758110172191,55.723428426861915,0.0 13.175885221360662,55.723313771587705,0.0 13.176054718563549,55.723237953825794,0.0 13.1762694442574,55.723223367793004,0.0 13.17646597532344,55.72327432174421,0.0 13.176586262517212,55.72337576549473,0.0 13.176883668469582,55.72389162899687,0.0 13.176903117746702,55.723965626770344,0.0 13.176889739016476,55.72434217766213,0.0 13.176889681417206,55.72434358024044,0.0</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>13.17630430165812,55.724024508750745,0.0</coordinates>
+                </Point>
+            </MultiGeometry>
+        </Placemark>
+        <Placemark>
+            <styleUrl>#inactive_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>4</value>
+                </Data>
+                <Data name="type">
+                    <value>1</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>25</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="occurred">
+                    <value>2026-09-01 08:00</value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-09-01 08:00</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value>2026-09-01 12:00</value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value>2026-09-01 08:00</value>
+                </Data>
+                <Data name="restored">
+                    <value>2026-09-01 15:09</value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>false</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>692033340</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>1</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>118289</value>
+                </Data>
+                <Data name="note_external">
+                    <value></value>
+                </Data>
+            </ExtendedData>
+            <MultiGeometry>
+                <Polygon>
+                    <extrude>true</extrude>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>13.024544829702396,55.7223650802395,0.0 13.024523111558773,55.72243212876093,0.0 13.024466758662518,55.72249241261447,0.0 13.022766863548851,55.72378686572547,0.0 13.02261121615182,55.72385774900328,0.0 13.022414129998484,55.723876946286126,0.0 13.022225388903966,55.72383960835881,0.0 13.020911425971379,55.72334182504389,0.0 13.020807619816743,55.723284475410914,0.0 13.02074719980235,55.723209919252675,0.0 13.019959987785183,55.721436029798944,0.0 13.019952583964322,55.72134771017111,0.0 13.020006151707623,55.72126462182581,0.0 13.021847056578704,55.71955883151149,0.0 13.022005662577735,55.71947571899534,0.0 13.022217877031132,55.71945175825494,0.0 13.022420919882729,55.71949403767373,0.0 13.022554724209254,55.71959004960371,0.0 13.02451493757161,55.72227305718699,0.0 13.024544829702396,55.7223650802395,0.0</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>13.022258433237392,55.72166342554815,0.0</coordinates>
+                </Point>
+            </MultiGeometry>
+        </Placemark>
+        <Placemark>
+            <styleUrl>#inactive_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>4</value>
+                </Data>
+                <Data name="type">
+                    <value>2</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>15</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="occurred">
+                    <value>2026-09-01 06:54</value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-09-01 07:06</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value></value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value></value>
+                </Data>
+                <Data name="restored">
+                    <value>2026-09-01 10:13</value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>false</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>692032788</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>0</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>118269</value>
+                </Data>
+                <Data name="note_external">
+                    <value></value>
+                </Data>
+            </ExtendedData>
+            <MultiGeometry>
+                <Polygon>
+                    <extrude>true</extrude>
+                    <altitudeMode>absolute</altitudeMode>
+                    <outerBoundaryIs>
+                        <LinearRing>
+                            <coordinates>15.86727427362048,56.42500241730079,0.0 15.867249836215139,56.425082109384384,0.0 15.867176070120658,56.425151845734,0.0 15.861327880737866,56.428913163602644,0.0 15.861156084618518,56.4289782770087,0.0 15.860948619461286,56.42898756167498,0.0 15.860760191560905,56.428938569333546,0.0 15.860640487079655,56.42884421871001,0.0 15.860621070009081,56.42872938887131,0.0 15.861116637295856,56.427092651800734,0.0 15.86119603500836,56.42699220379912,0.0 15.863754010457342,56.42516364248154,0.0 15.863862458485482,56.425109779443694,0.0 15.863998261753354,56.4250806365192,0.0 15.866792920057563,56.424784643010675,0.0 15.866968456673106,56.424787514689235,0.0 15.867125323013079,56.42483126591502,0.0 15.867234067657911,56.424907682488765,0.0 15.86727427362048,56.42500241730079,0.0</coordinates>
+                        </LinearRing>
+                    </outerBoundaryIs>
+                </Polygon>
+                <Point>
+                    <altitudeMode>absolute</altitudeMode>
+                    <coordinates>15.863948280039894,56.42688559809769,0.0</coordinates>
+                </Point>
+            </MultiGeometry>
+        </Placemark>
+        <Placemark>
+            <styleUrl>#planned_outage</styleUrl>
+            <ExtendedData>
+                <Data name="status">
+                    <value>2</value>
+                </Data>
+                <Data name="type">
+                    <value>1</value>
+                </Data>
+                <Data name="current_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="previously_affected_customers">
+                    <value>0</value>
+                </Data>
+                <Data name="future_affected_customers">
+                    <value>36</value>
+                </Data>
+                <Data name="occurred">
+                    <value></value>
+                </Data>
+                <Data name="reported">
+                    <value>2026-04-14 08:03</value>
+                </Data>
+                <Data name="planned_restored_time">
+                    <value></value>
+                </Data>
+                <Data name="planned_occurred_time">
+                    <value></value>
+                </Data>
+                <Data name="restored">
+                    <value></value>
+                </Data>
+                <Data name="planned_not_started">
+                    <value>true</value>
+                </Data>
+                <Data name="planned_no_affected_customers">
+                    <value>false</value>
+                </Data>
+                <Data name="outage_oid">
+                    <value>689882300</value>
+                </Data>
+                <Data name="outage_subtype">
+                    <value>1</value>
+                </Data>
+                <Data name="outage_id">
+                    <value>105489</value>
+                </Data>
+                <Data name="note_external">
+                    <value></value>
+                </Data>
+            </ExtendedData>
+            <Point>
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates>13.030269534235668,56.1834313182776,0.0</coordinates>
+            </Point>
+        </Placemark>
+    </Document>
+</kml>
