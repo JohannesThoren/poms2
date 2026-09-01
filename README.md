@@ -34,5 +34,6 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 
 - [x] Grundarkitektur (types, db, adapter-sdk, ingestion)
 - [x] Ellevio-adapter (kommun-nivå, aggregerade kundantal)
-- [ ] Vattenfall, Kraftringen, Jämtkraft, Tekniska verken, Öresundskraft (byggda tidigare, återstår att bygga om)
+- [x] Vattenfall-adapter (`incidents.json`, riktiga koordinater via polygon-centroid)
+- [ ] Kraftringen, Jämtkraft, Tekniska verken, Öresundskraft (byggda tidigare, återstår att bygga om)
 - [ ] Frontend
