@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: poms
+      POSTGRES_PASSWORD: poms
+      POSTGRES_DB: poms
+    volumes:
+      - poms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: services/ingestion/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ellevio-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/ellevio/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+volumes:
+  poms_pgdata:

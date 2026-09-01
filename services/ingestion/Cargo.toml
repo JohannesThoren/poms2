@@ -1,0 +1,15 @@
+[package]
+name = "poms-ingestion"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+poms-types = { path = "../../crates/types" }
+poms-db = { path = "../../crates/db" }
+tokio.workspace = true
+sqlx.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "poms-adapter-sdk"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+poms-types = { path = "../types" }
+sqlx.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+async-trait.workspace = true
