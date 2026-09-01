@@ -8,6 +8,7 @@ members = [
     "crates/adapters/vattenfall",
     "crates/adapters/kraftringen",
     "crates/adapters/tekniskaverken",
+    "crates/adapters/oresundskraft",
     "services/ingestion",
 ]
 

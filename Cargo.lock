@@ -1426,6 +1426,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "poms-adapter-oresundskraft"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "poms-adapter-sdk",
+ "poms-db",
+ "poms-types",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "poms-adapter-sdk"
 version = "0.1.0"
 dependencies = [

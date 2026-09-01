@@ -37,5 +37,6 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [x] Vattenfall-adapter (`incidents.json`, riktiga koordinater via polygon-centroid)
 - [x] Kraftringen-adapter (KML-feed, riktiga koordinater, saknar ortnamn - se modulkommentar)
 - [x] Tekniska verken-adapter (`api.tekniskaverken.net/outage/v1/public/outages`, rikast källan hittills)
-- [ ] Jämtkraft (avbrottskartan var nere vid försök, 503), Öresundskraft (byggda tidigare, återstår att bygga om)
+- [x] Öresundskraft-adapter (Tekla/GeoServer tile-system, koordinater joinade från separat endpoint)
+- [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
 - [ ] Frontend
