@@ -40,5 +40,19 @@ services:
       ingestion:
         condition: service_started
 
+  vattenfall-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/vattenfall/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
 volumes:
   poms_pgdata:
