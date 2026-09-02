@@ -191,6 +191,18 @@ impl DigproAdapter {
     pub fn new(provider: Provider, adapter_name: &'static str, base_url: &str, cust: &str, app: &str) -> Self {
         let kml_url =
             format!("{base_url}/bios/servlet/sys.outagemap.servlets.api.GetOutagesKML?app={app}_{cust}");
+        Self::from_url(provider, adapter_name, kml_url)
+    }
+
+    /// Some deployments (e.g. Telge Nät) serve the same product under a
+    /// servlet path missing the `.api.` segment
+    /// (`sys.outagemap.servlets.GetOutagesKML` instead of
+    /// `sys.outagemap.servlets.api.GetOutagesKML`) - and in Telge's case,
+    /// their own site API happens to publish the exact working KML URL
+    /// directly, which is easier and more robust than guessing at the
+    /// path variant. Use this constructor when you have that URL already
+    /// rather than trying to reconstruct it from base_url/cust/app.
+    pub fn from_url(provider: Provider, adapter_name: &'static str, kml_url: impl Into<String>) -> Self {
         Self {
             client: reqwest::Client::builder()
                 .user_agent("POMS2/0.1 (+https://github.com/JohannesThoren/poms2)")
@@ -198,7 +210,7 @@ impl DigproAdapter {
                 .expect("failed to build HTTP client"),
             provider,
             adapter_name,
-            kml_url,
+            kml_url: kml_url.into(),
         }
     }
 }

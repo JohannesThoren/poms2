@@ -20,6 +20,7 @@ fn parse_provider(name: &str) -> Provider {
         "vasterbergslagens" => Provider::Vasterbergslagens,
         "partille" => Provider::Partille,
         "linde" => Provider::Linde,
+        "telge" => Provider::Telge,
         other => panic!("unknown DIGPRO_PROVIDER: {other}"),
     }
 }
@@ -31,20 +32,25 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let provider_name = env_or_die("DIGPRO_PROVIDER");
-    let base_url = env_or_die("DIGPRO_BASE_URL");
-    let cust = env_or_die("DIGPRO_CUST");
-    let app = std::env::var("DIGPRO_APP").unwrap_or_else(|_| "fpp".to_string());
-
     let provider = parse_provider(&provider_name);
-    // Leaked deliberately: Adapter::name() needs a &'static str, and this
-    // runs once at startup for the life of the process - not a real leak
-    // in practice.
     let adapter_name: &'static str = Box::leak(format!("digpro-{provider_name}").into_boxed_str());
 
     let pool = poms_db::connect().await?;
     let sink = PostgresEventSink::new(pool);
-    let adapter = DigproAdapter::new(provider, adapter_name, &base_url, &cust, &app);
 
-    tracing::info!(provider = provider_name, base_url, cust, "digpro adapter starting");
+    // Two ways to configure a deployment: the usual base_url + cust (+
+    // optional app) that reconstructs the standard path, or a full
+    // DIGPRO_KML_URL for deployments (e.g. Telge Nät) that use a
+    // differently-shaped servlet path.
+    let adapter = if let Ok(kml_url) = std::env::var("DIGPRO_KML_URL") {
+        DigproAdapter::from_url(provider, adapter_name, kml_url)
+    } else {
+        let base_url = env_or_die("DIGPRO_BASE_URL");
+        let cust = env_or_die("DIGPRO_CUST");
+        let app = std::env::var("DIGPRO_APP").unwrap_or_else(|_| "fpp".to_string());
+        DigproAdapter::new(provider, adapter_name, &base_url, &cust, &app)
+    };
+
+    tracing::info!(provider = provider_name, "digpro adapter starting");
     run_poll_loop(adapter, sink, Duration::from_secs(60)).await;
 }
