@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Outage } from "@/lib/db";
 import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
+import { OutageMap } from "@/components/OutageMap";
 
 const FILTERABLE_STATUSES = ["fault", "planned", "upcoming"] as const;
 type FilterableStatus = (typeof FILTERABLE_STATUSES)[number];
@@ -45,6 +46,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
   );
 
   const totalCustomers = filtered.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+  const located = filtered.filter((o) => o.lat != null && o.lng != null);
 
   const providerSummary = useMemo(() => {
     const byProvider = new Map<string, { active_count: number; total_customers: number }>();
@@ -116,6 +118,13 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
         ))}
       </section>
 
+      <section className="py-6 border-b border-[var(--line)]">
+        <h2 className="text-sm text-[var(--muted)] mb-3">
+          Karta ({located.length} av {filtered.length} har koordinater)
+        </h2>
+        <OutageMap outages={filtered} />
+      </section>
+
       <section className="flex-1 py-6">
         <h2 className="text-sm text-[var(--muted)] mb-3">Aktuella avbrott ({filtered.length})</h2>
         {filtered.length === 0 ? (
@@ -141,7 +150,12 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
                   <td className="py-2.5 pr-4 text-[var(--text)]">{providerName(o.provider)}</td>
                   <td className="py-2.5 pr-4 text-[var(--text)]">
                     {o.area_label}
-                    <span className="block text-xs text-[var(--muted)]">{STATUS_LABELS[o.status]}</span>
+                    <span className="block text-xs text-[var(--muted)]">
+                      {STATUS_LABELS[o.status]}
+                      {o.lat != null && o.lng != null && (
+                        <span className="font-mono"> · {o.lat.toFixed(4)}, {o.lng.toFixed(4)}</span>
+                      )}
+                    </span>
                   </td>
                   <td className="py-2.5 pr-4 text-right font-mono">
                     {o.affected_customers != null ? o.affected_customers.toLocaleString("sv-SE") : "—"}
