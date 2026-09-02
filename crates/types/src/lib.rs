@@ -39,6 +39,7 @@ pub enum Provider {
     UpplandsEnergi,
     Voe,
     Hoganas,
+    Eksjo,
 }
 
 impl Provider {
@@ -66,6 +67,7 @@ impl Provider {
             Provider::UpplandsEnergi => "upplands_energi",
             Provider::Voe => "voe",
             Provider::Hoganas => "hoganas",
+            Provider::Eksjo => "eksjo",
         }
     }
 }

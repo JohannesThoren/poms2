@@ -1410,6 +1410,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "poms-adapter-eksjo"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "chrono-tz",
+ "poms-adapter-sdk",
+ "poms-db",
+ "poms-types",
+ "reqwest",
+ "scraper",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "poms-adapter-ellevio"
 version = "0.1.0"
 dependencies = [

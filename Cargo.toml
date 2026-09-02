@@ -16,6 +16,7 @@ members = [
     "crates/adapters/malarenergi",
     "crates/adapters/upplandsenergi",
     "crates/adapters/voe",
+    "crates/adapters/eksjo",
     "services/ingestion",
 ]
 
