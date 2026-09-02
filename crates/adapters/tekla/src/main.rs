@@ -15,6 +15,7 @@ fn parse_provider(name: &str) -> Provider {
     match name {
         "oresundskraft" => Provider::Oresundskraft,
         "gavle" => Provider::Gavle,
+        "harjeans" => Provider::Harjeans,
         other => panic!("unknown TEKLA_PROVIDER: {other}"),
     }
 }

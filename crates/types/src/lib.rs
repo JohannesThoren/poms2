@@ -41,6 +41,7 @@ pub enum Provider {
     Hoganas,
     Eksjo,
     Pite,
+    Harjeans,
 }
 
 impl Provider {
@@ -70,6 +71,7 @@ impl Provider {
             Provider::Hoganas => "hoganas",
             Provider::Eksjo => "eksjo",
             Provider::Pite => "pite",
+            Provider::Harjeans => "harjeans",
         }
     }
 }

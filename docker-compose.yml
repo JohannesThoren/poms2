@@ -290,6 +290,26 @@ services:
       ingestion:
         condition: service_started
 
+  harjeans-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/tekla/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      TEKLA_PROVIDER: harjeans
+      TEKLA_BASE_URL: https://avbrottskarta.harjeans.se
+      TEKLA_LAT_MIN: "61.444603"
+      TEKLA_LAT_MAX: "63.37092"
+      TEKLA_LNG_MIN: "12.0541754"
+      TEKLA_LNG_MAX: "16.999979"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   skekraft-adapter:
     build:
       context: .
