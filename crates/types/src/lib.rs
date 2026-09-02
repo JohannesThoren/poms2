@@ -30,6 +30,10 @@ pub enum Provider {
     Linde,
     Gavle,
     Skekraft,
+    Karlstad,
+    EskilstunaStrangnas,
+    Tranas,
+    Uddevalla,
 }
 
 impl Provider {
@@ -48,6 +52,10 @@ impl Provider {
             Provider::Linde => "linde",
             Provider::Gavle => "gavle",
             Provider::Skekraft => "skekraft",
+            Provider::Karlstad => "karlstad",
+            Provider::EskilstunaStrangnas => "eskilstuna_strangnas",
+            Provider::Tranas => "tranas",
+            Provider::Uddevalla => "uddevalla",
         }
     }
 }

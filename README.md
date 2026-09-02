@@ -44,6 +44,7 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
 - [ ] Fler Digpro-kandidater: Falu Elnät (500-fel just nu), Härnösand Elnät (503), Hedemora Energi (503), Bergs Tingslags Elektriska (ingen anslutning)
 - [x] Skellefteå Kraft-adapter (`driftinfo3-api.skekraft.se/api/disturbances`, eget system, hittat via app.config.js)
+- [x] ServiceAlert-familjen (`se.sms-service.dk`): en generisk adapter täcker Karlstads El, Eskilstuna Strängnäs Energi, Tranås Energi, Uddevalla Energi. **Osäker statuslogik** - se varningen i `crates/adapters/servicealert/src/lib.rs` (ingen riktig statuskod i källan, bara ett visningsfönster + fritext; inte verifierad mot ett riktigt elavbrott än)
 - [ ] Kalmar Energi använder bara en manuellt uppdaterad Google My Maps-karta, ingen realtids-API - troligen inte värt att bygga adapter för
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
 - [ ] Frontend

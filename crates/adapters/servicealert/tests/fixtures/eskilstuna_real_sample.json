@@ -1,0 +1,340 @@
+{
+  "countryId": 2,
+  "customerSettings": {
+    "mapLayerId": 4,
+    "mapZoomLevel": 105,
+    "defaultMapCenterCoords": {
+      "lat": 59.31727981567383,
+      "lng": 16.53692054748535
+    },
+    "hasSearchInput": true,
+    "showInfoOnHover": false,
+    "showInfoAndZoomOnClick": true,
+    "showLegend": true,
+    "showPolygons": true,
+    "useAreaCirclesInsteadOfSingleAddressMarkers": false,
+    "showArchiveDays": 20,
+    "showClusterMarkers": false,
+    "id": 412
+  },
+  "profileSettingsAndMessages": [
+    {
+      "id": 6541,
+      "profileName": null,
+      "profileTitle": "Elnät",
+      "cssColor": "Red",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/power-plug.png",
+      "sortOrder": 3,
+      "webMessages": []
+    },
+    {
+      "id": 6547,
+      "profileName": null,
+      "profileTitle": "Fjärrvärme",
+      "cssColor": "Black",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/factory.png",
+      "sortOrder": 4,
+      "webMessages": [
+        {
+          "id": 221117,
+          "smsGroupId": 3147357,
+          "smsGroupSendMethod": "ByMap",
+          "smsGroupGeoObjects": "[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[16.532359,59.381149],[16.532155,59.381035],[16.53135,59.381368],[16.532396,59.38204],[16.533211,59.382567],[16.534172,59.382972],[16.535577,59.382985],[16.537262,59.382401],[16.537605,59.381674],[16.538093,59.381409],[16.537825,59.38124],[16.53739,59.381272],[16.536398,59.380712],[16.535481,59.380133],[16.534676,59.380505],[16.534907,59.380701],[16.534182,59.380893],[16.533324,59.381158],[16.533067,59.380991],[16.532444,59.381218],[16.532359,59.381149]]]}}]",
+          "title": "Planerat avbrott fjärrvärme/fjärrkyla",
+          "text": "<p><span style=\"color: rgb(51, 51, 51);\">Avbrottet på fjärrvärmen är nu avhjälpt.</span></p><br /><p><strong style=\"color: rgb(51, 51, 51);\">Berört område:</strong><span style=\"color: rgb(51, 51, 51);\"> Eskilstuna: Sundbyvägen, Duvtorpsvägen, Rökstavägen, Spelmansvägen</span></p><p><strong>Avhjälpt:</strong> tisdag 01 september 09:30</p><br /><p>--------------</p><p>På grund av ett planerat arbete stängs fjärrvärmen tillfälligt av på nedanstående adresser.&nbsp;</p><br /><p><strong style=\"color: rgb(51, 51, 51);\">Berört område:</strong><span style=\"color: rgb(51, 51, 51);\"> Eskilstuna: Sundbyvägen, Duvtorpsvägen, Rökstavägen, Spelmansvägen</span></p><p><strong>Antal berörda adresser:</strong> 59</p><p><strong>Arbetstyp:</strong> Förstärkning av nätet</p><p><strong>Starttid:</strong> tisdag 01 september 07:30&nbsp;</p><p><strong>Beräknad sluttid:</strong> tisdag 01 september 10:00&nbsp;</p><p>&nbsp;</p><p>Kallvattnet i kranen påverkas inte.</p>",
+          "profileId": 6547,
+          "criticalStatus": false,
+          "dateExpireUtc": "2026-09-02T06:32:00Z",
+          "dateDelayUtc": "2026-09-01T06:30:00Z",
+          "affectedAddressesCoordinates": [
+            {
+              "lat": 59.38077778955899,
+              "lng": 16.536147360848474
+            },
+            {
+              "lat": 59.38093845810342,
+              "lng": 16.53642308282996
+            },
+            {
+              "lat": 59.38101526695736,
+              "lng": 16.535811522371205
+            },
+            {
+              "lat": 59.38137610073573,
+              "lng": 16.536441227389926
+            },
+            {
+              "lat": 59.381592467503545,
+              "lng": 16.53293683475659
+            },
+            {
+              "lat": 59.38188657870392,
+              "lng": 16.536947888912476
+            },
+            {
+              "lat": 59.38195284580185,
+              "lng": 16.53398843407113
+            },
+            {
+              "lat": 59.38230860963215,
+              "lng": 16.53390438865486
+            },
+            {
+              "lat": 59.38287479485177,
+              "lng": 16.535020900979735
+            },
+            {
+              "lat": 59.38082547399409,
+              "lng": 16.53553008498569
+            },
+            {
+              "lat": 59.381387607069456,
+              "lng": 16.537751577631617
+            },
+            {
+              "lat": 59.38226090589074,
+              "lng": 16.53509657739884
+            },
+            {
+              "lat": 59.3824811521833,
+              "lng": 16.53336149984099
+            },
+            {
+              "lat": 59.381182662447365,
+              "lng": 16.5360880946685
+            },
+            {
+              "lat": 59.38125527904857,
+              "lng": 16.536976530790238
+            },
+            {
+              "lat": 59.38158878733819,
+              "lng": 16.532103229402384
+            },
+            {
+              "lat": 59.381751486686746,
+              "lng": 16.533162407810472
+            },
+            {
+              "lat": 59.38245100187148,
+              "lng": 16.536687362710104
+            },
+            {
+              "lat": 59.3828424161911,
+              "lng": 16.535482648701358
+            },
+            {
+              "lat": 59.38284465712215,
+              "lng": 16.534528811459726
+            },
+            {
+              "lat": 59.381165839746025,
+              "lng": 16.53217216721588
+            },
+            {
+              "lat": 59.38173510936737,
+              "lng": 16.536472292235793
+            },
+            {
+              "lat": 59.38213321241681,
+              "lng": 16.534307964290754
+            },
+            {
+              "lat": 59.38215958380459,
+              "lng": 16.5355018409435
+            },
+            {
+              "lat": 59.382295130463845,
+              "lng": 16.536957576988897
+            },
+            {
+              "lat": 59.380308810997775,
+              "lng": 16.53554853291583
+            },
+            {
+              "lat": 59.38125846790748,
+              "lng": 16.533079646546142
+            },
+            {
+              "lat": 59.38133513099922,
+              "lng": 16.53572531146066
+            },
+            {
+              "lat": 59.381593896849864,
+              "lng": 16.533579441978926
+            },
+            {
+              "lat": 59.38186193710063,
+              "lng": 16.53255290730776
+            },
+            {
+              "lat": 59.3820567223156,
+              "lng": 16.532792206300492
+            },
+            {
+              "lat": 59.3820731274175,
+              "lng": 16.536551435706546
+            },
+            {
+              "lat": 59.38209219215039,
+              "lng": 16.533595342603412
+            },
+            {
+              "lat": 59.38263032105211,
+              "lng": 16.533660909207146
+            },
+            {
+              "lat": 59.38136055273433,
+              "lng": 16.531652838313374
+            },
+            {
+              "lat": 59.38143510461979,
+              "lng": 16.533334619669198
+            },
+            {
+              "lat": 59.38153012009904,
+              "lng": 16.53670950762982
+            },
+            {
+              "lat": 59.38167540184076,
+              "lng": 16.536957027095806
+            },
+            {
+              "lat": 59.38216177495135,
+              "lng": 16.53626937814371
+            },
+            {
+              "lat": 59.382273652212724,
+              "lng": 16.533057805062267
+            },
+            {
+              "lat": 59.382434164694686,
+              "lng": 16.534302302296226
+            },
+            {
+              "lat": 59.382706277219874,
+              "lng": 16.535984277175153
+            },
+            {
+              "lat": 59.38047622489427,
+              "lng": 16.53506046269013
+            },
+            {
+              "lat": 59.380675591085165,
+              "lng": 16.535291717384798
+            },
+            {
+              "lat": 59.3808328563787,
+              "lng": 16.534902747557627
+            },
+            {
+              "lat": 59.3810137773386,
+              "lng": 16.535174978602484
+            },
+            {
+              "lat": 59.38123074430306,
+              "lng": 16.53199905824502
+            },
+            {
+              "lat": 59.38189477748022,
+              "lng": 16.536251789793315
+            },
+            {
+              "lat": 59.38204346997518,
+              "lng": 16.535828323498727
+            },
+            {
+              "lat": 59.382298249653886,
+              "lng": 16.535930067877135
+            },
+            {
+              "lat": 59.38274203660672,
+              "lng": 16.534090099901924
+            },
+            {
+              "lat": 59.38129564863249,
+              "lng": 16.53182594861085
+            },
+            {
+              "lat": 59.38142898530613,
+              "lng": 16.53270886193773
+            },
+            {
+              "lat": 59.38153844704456,
+              "lng": 16.53600241916108
+            },
+            {
+              "lat": 59.38190601701897,
+              "lng": 16.53338778031776
+            },
+            {
+              "lat": 59.382228065130114,
+              "lng": 16.534643420774657
+            },
+            {
+              "lat": 59.382423703050975,
+              "lng": 16.535573197938625
+            },
+            {
+              "lat": 59.382519290025854,
+              "lng": 16.534701155702695
+            },
+            {
+              "lat": 59.38258089397433,
+              "lng": 16.53633509582953
+            }
+          ]
+        },
+        {
+          "id": 220672,
+          "smsGroupId": 3140402,
+          "smsGroupSendMethod": "ByMap",
+          "smsGroupGeoObjects": "[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[16.50573,59.366578],[16.505767,59.366182],[16.506164,59.366187],[16.506309,59.3666],[16.50573,59.366578]]]}}]",
+          "title": "Planerat avbrott fjärrvärme/fjärrkyla",
+          "text": "<p>På grund av ett planerat arbete stängs fjärrvärmen tillfälligt av på nedanstående adresser.&nbsp;</p><br /><p><strong style=\"color: rgb(51, 51, 51);\">Berört område:</strong><span style=\"color: rgb(51, 51, 51);\"> Eskilstuna: Ekvallsgatan, Svengrensgatan</span></p><p><strong>Antal berörda adresser:</strong> 2</p><p><strong>Arbetstyp:</strong> Förstärkning av nätet</p><p><strong>Starttid:</strong> onsdag 02 september 07:30&nbsp;</p><p><strong>Beräknad sluttid:</strong> onsdag 02 september 10:00&nbsp;</p><p>&nbsp;</p><p>Kallvattnet i kranen påverkas inte.</p>",
+          "profileId": 6547,
+          "criticalStatus": false,
+          "dateExpireUtc": "2026-09-03T06:00:00Z",
+          "dateDelayUtc": "2026-09-01T06:00:00Z",
+          "affectedAddressesCoordinates": [
+            {
+              "lat": 59.36648214727855,
+              "lng": 16.50583744861898
+            },
+            {
+              "lat": 59.366301388260744,
+              "lng": 16.505935013866544
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6549,
+      "profileName": null,
+      "profileTitle": "Vatten",
+      "cssColor": "Red",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/water_drop.png",
+      "sortOrder": 6,
+      "webMessages": []
+    },
+    {
+      "id": 6542,
+      "profileName": null,
+      "profileTitle": "Stadsnät",
+      "cssColor": "Yellow",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/wifi_network.png",
+      "sortOrder": 5,
+      "webMessages": []
+    },
+    {
+      "id": 6544,
+      "profileName": null,
+      "profileTitle": "Återvinning",
+      "cssColor": "Green",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/SilkeborgForsyning/Affald_color.png",
+      "sortOrder": 1,
+      "webMessages": []
+    }
+  ]
+}

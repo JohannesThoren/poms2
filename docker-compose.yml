@@ -218,6 +218,70 @@ services:
       ingestion:
         condition: service_started
 
+  karlstad-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/servicealert/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: karlstad
+      SERVICEALERT_CUSTOMER_ID: fa39c3a2-d576-40c3-bfa5-ae15f9117d90
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  eskilstuna-strangnas-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/servicealert/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: eskilstuna_strangnas
+      SERVICEALERT_CUSTOMER_ID: 85d4733d-c1dc-4e4f-8af1-ae9937e58e12
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  tranas-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/servicealert/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: tranas
+      SERVICEALERT_CUSTOMER_ID: cc551bb5-6411-4cdf-b3b2-726c6dd8d9d2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  uddevalla-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/servicealert/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: uddevalla
+      SERVICEALERT_CUSTOMER_ID: 7286e5e2-c356-4745-a155-2422a2c77f4d
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   frontend:
     build:
       context: .

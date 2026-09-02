@@ -12,6 +12,7 @@ members = [
     "crates/adapters/digpro",
     "crates/adapters/tekla",
     "crates/adapters/skekraft",
+    "crates/adapters/servicealert",
     "services/ingestion",
 ]
 
@@ -35,3 +36,4 @@ async-trait = "0.1"
 reqwest = { version = "0.11", features = ["json"] }
 scraper = "0.18"
 quick-xml = { version = "0.36", features = ["serialize"] }
+regex = "1"
