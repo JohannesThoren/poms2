@@ -327,13 +327,14 @@ services:
   uddevalla-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/servicealert/Dockerfile
+      dockerfile: crates/adapters/digpro/Dockerfile
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
       RUST_LOG: info
-      SERVICEALERT_PROVIDER: uddevalla
-      SERVICEALERT_CUSTOMER_ID: 7286e5e2-c356-4745-a155-2422a2c77f4d
+      DIGPRO_PROVIDER: uddevalla
+      DIGPRO_BASE_URL: https://nisweb.uddevallaenergi.se
+      DIGPRO_CUST: udd
     depends_on:
       postgres:
         condition: service_healthy

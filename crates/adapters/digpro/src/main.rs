@@ -21,6 +21,7 @@ fn parse_provider(name: &str) -> Provider {
         "partille" => Provider::Partille,
         "linde" => Provider::Linde,
         "telge" => Provider::Telge,
+        "uddevalla" => Provider::Uddevalla,
         other => panic!("unknown DIGPRO_PROVIDER: {other}"),
     }
 }
