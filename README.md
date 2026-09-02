@@ -38,9 +38,12 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [x] Kraftringen-adapter (KML-feed, riktiga koordinater, saknar ortnamn - se modulkommentar)
 - [x] Tekniska verken-adapter (`api.tekniskaverken.net/outage/v1/public/outages`, rikast källan hittills)
 - [x] Öresundskraft-adapter (Tekla/GeoServer tile-system, koordinater joinade från separat endpoint)
-- [x] Digpro "Outage Map"-familjen: en generisk adapter (env-var-konfigurerad) täcker Växjö Energi, Lerum Energi, Västerbergslagens Elnät, Partille Energi - samma bakomliggande system som Kraftringen, se `crates/adapters/digpro/src/lib.rs` för hur det hittades
-- [x] Frontend (Next.js, `/frontend`) - dashboard som läser direkt från `outages`-tabellen, alltid färsk rendering (`dynamic = "force-dynamic"`)
+- [x] Digpro "Outage Map"-familjen: en generisk adapter (env-var-konfigurerad) täcker Växjö Energi, Lerum Energi, Västerbergslagens Elnät, Partille Energi, Linde Energi - samma bakomliggande system som Kraftringen, se `crates/adapters/digpro/src/lib.rs` för hur det hittades
+- [x] Tekla/GeoServer-familjen: en generisk adapter (env-var-konfigurerad) täcker Gävle Energi utöver Öresundskraft - samma bakomliggande system, se `crates/adapters/tekla/src/lib.rs`. Sundsvall Elnät bekräftat kompatibel men inte tillagd som tjänst än.
+- [x] Frontend (Next.js, `/frontend`) - dashboard som läser direkt från `outages`-tabellen, alltid färsk rendering (`dynamic = "force-dynamic"`), interaktivt statusfilter
 - [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
-- [ ] Fler Digpro-kandidater att verifiera: Falu Elnät, Linde Energi, Härnösand Elnät, Härjeåns Nät, Hedemora Energi, Bergs Tingslags Elektriska (nere/otestade vid senaste försök)
+- [ ] Fler Digpro-kandidater: Falu Elnät (500-fel just nu), Härnösand Elnät (503), Hedemora Energi (503), Bergs Tingslags Elektriska (ingen anslutning)
+- [ ] Karlstads El (delad dansk tjänst "se.sms-service.dk", ej undersökt i detalj), Mälarenergi, Norrtälje Energi, Skellefteå Kraft (eget skräddarsytt system) - ej undersökta i detalj
+- [ ] Kalmar Energi använder bara en manuellt uppdaterad Google My Maps-karta, ingen realtids-API - troligen inte värt att bygga adapter för
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
 - [ ] Frontend

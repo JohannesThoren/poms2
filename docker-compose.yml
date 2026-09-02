@@ -167,6 +167,43 @@ services:
       ingestion:
         condition: service_started
 
+  linde-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/digpro/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: linde
+      DIGPRO_BASE_URL: https://webmap.lindeenergi.se
+      DIGPRO_CUST: lie
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  gavle-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/tekla/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      TEKLA_PROVIDER: gavle
+      TEKLA_BASE_URL: https://avbrottskartan.gavleenergi.se
+      TEKLA_LAT_MIN: "60.22318"
+      TEKLA_LAT_MAX: "61.1033"
+      TEKLA_LNG_MIN: "16.0362072"
+      TEKLA_LNG_MAX: "17.4796429"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   frontend:
     build:
       context: .

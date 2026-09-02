@@ -1,0 +1,22 @@
+[package]
+name = "poms-adapter-tekla"
+edition.workspace = true
+version.workspace = true
+
+[[bin]]
+name = "tekla-adapter"
+path = "src/main.rs"
+
+[dependencies]
+poms-types = { path = "../../types" }
+poms-adapter-sdk = { path = "../../adapter-sdk" }
+poms-db = { path = "../../db" }
+tokio.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+async-trait.workspace = true

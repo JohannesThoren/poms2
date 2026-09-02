@@ -27,6 +27,8 @@ pub enum Provider {
     Lerum,
     Vasterbergslagens,
     Partille,
+    Linde,
+    Gavle,
 }
 
 impl Provider {
@@ -42,6 +44,8 @@ impl Provider {
             Provider::Lerum => "lerum",
             Provider::Vasterbergslagens => "vasterbergslagens",
             Provider::Partille => "partille",
+            Provider::Linde => "linde",
+            Provider::Gavle => "gavle",
         }
     }
 }
