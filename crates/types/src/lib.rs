@@ -35,6 +35,7 @@ pub enum Provider {
     Tranas,
     Uddevalla,
     Telge,
+    Malarenergi,
 }
 
 impl Provider {
@@ -58,6 +59,7 @@ impl Provider {
             Provider::Tranas => "tranas",
             Provider::Uddevalla => "uddevalla",
             Provider::Telge => "telge",
+            Provider::Malarenergi => "malarenergi",
         }
     }
 }
