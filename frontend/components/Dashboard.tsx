@@ -48,6 +48,14 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
   const totalCustomers = filtered.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
   const located = filtered.filter((o) => o.lat != null && o.lng != null);
 
+  // "Right now" should mean right now - upcoming (not-yet-started) planned
+  // work hasn't cut anyone's power yet, so it's excluded here regardless
+  // of the filter toggles above, which control what's *browsable* in the
+  // map/table rather than this headline figure.
+  const currentlyWithoutPower = outages
+    .filter((o) => o.status === "fault" || o.status === "planned")
+    .reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+
   const providerSummary = useMemo(() => {
     const byProvider = new Map<string, { active_count: number; total_customers: number }>();
     for (const o of filtered) {
@@ -71,11 +79,16 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
         <div className="text-right">
           <div
             className="font-mono text-4xl leading-none"
-            style={{ color: totalCustomers > 0 ? "var(--fault)" : "var(--text)" }}
+            style={{ color: currentlyWithoutPower > 0 ? "var(--fault)" : "var(--text)" }}
           >
-            {totalCustomers.toLocaleString("sv-SE")}
+            {currentlyWithoutPower.toLocaleString("sv-SE")}
           </div>
           <p className="text-sm text-[var(--muted)] mt-1">kunder utan ström just nu</p>
+          {visible.has("upcoming") && totalCustomers !== currentlyWithoutPower && (
+            <p className="text-xs text-[var(--muted)] mt-1">
+              varav {(totalCustomers - currentlyWithoutPower).toLocaleString("sv-SE")} rör kommande, ej påbörjat avbrott
+            </p>
+          )}
         </div>
       </header>
 
