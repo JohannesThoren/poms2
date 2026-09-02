@@ -167,5 +167,20 @@ services:
       ingestion:
         condition: service_started
 
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   poms_pgdata:

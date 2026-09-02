@@ -39,6 +39,7 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [x] Tekniska verken-adapter (`api.tekniskaverken.net/outage/v1/public/outages`, rikast källan hittills)
 - [x] Öresundskraft-adapter (Tekla/GeoServer tile-system, koordinater joinade från separat endpoint)
 - [x] Digpro "Outage Map"-familjen: en generisk adapter (env-var-konfigurerad) täcker Växjö Energi, Lerum Energi, Västerbergslagens Elnät, Partille Energi - samma bakomliggande system som Kraftringen, se `crates/adapters/digpro/src/lib.rs` för hur det hittades
+- [x] Frontend (Next.js, `/frontend`) - dashboard som läser direkt från `outages`-tabellen, alltid färsk rendering (`dynamic = "force-dynamic"`)
 - [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
 - [ ] Fler Digpro-kandidater att verifiera: Falu Elnät, Linde Energi, Härnösand Elnät, Härjeåns Nät, Hedemora Energi, Bergs Tingslags Elektriska (nere/otestade vid senaste försök)
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
