@@ -1609,6 +1609,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "poms-adapter-voe"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "poms-adapter-sdk",
+ "poms-db",
+ "poms-types",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "poms-db"
 version = "0.1.0"
 dependencies = [
