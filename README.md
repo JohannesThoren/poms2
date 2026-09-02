@@ -42,7 +42,7 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [x] Tekla/GeoServer-familjen: en generisk adapter (env-var-konfigurerad) täcker Gävle Energi utöver Öresundskraft - samma bakomliggande system, se `crates/adapters/tekla/src/lib.rs`. Sundsvall Elnät bekräftat kompatibel men inte tillagd som tjänst än.
 - [x] Frontend (Next.js, `/frontend`) - dashboard som läser direkt från `outages`-tabellen, alltid färsk rendering (`dynamic = "force-dynamic"`), interaktivt statusfilter
 - [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
-- [ ] Fler Digpro-kandidater: Falu Elnät (500-fel just nu), Härnösand Elnät (503), Hedemora Energi (503), Bergs Tingslags Elektriska (ingen anslutning)
+- [ ] Fler Digpro-kandidater: Falu Elnät (500-fel just nu), Härnösand Elnät (503), Hedemora Energi (503), Bergs Tingslags Elektriska (ingen anslutning), Härryda Energi (503, `cust=hra`, formel bekräftad)
 - [x] Skellefteå Kraft-adapter (`driftinfo3-api.skekraft.se/api/disturbances`, eget system, hittat via app.config.js)
 - [x] ServiceAlert-familjen (`se.sms-service.dk`): en generisk adapter täcker Karlstads El, Eskilstuna Strängnäs Energi, Tranås Energi, Höganäs Energi (Uddevalla bytte till Digpro). **Osäker statuslogik** - se varningen i `crates/adapters/servicealert/src/lib.rs` (ingen riktig statuskod i källan, bara ett visningsfönster + fritext; inte verifierad mot ett riktigt elavbrott än)
 - [x] Eksjö Energi-adapter (server-renderad HTML, `eksjoenergi.se/driftinformation/`, ingen egen ID i källan så adaptern hashar titel+tid till ett stabilt id)
