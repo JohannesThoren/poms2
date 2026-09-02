@@ -341,6 +341,22 @@ services:
       ingestion:
         condition: service_started
 
+  hoganas-adapter:
+    build:
+      context: .
+      dockerfile: crates/adapters/servicealert/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: hoganas
+      SERVICEALERT_CUSTOMER_ID: b34e2d1f-85f0-4f04-8edc-3f6cc4ade8be
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   frontend:
     build:
       context: .
