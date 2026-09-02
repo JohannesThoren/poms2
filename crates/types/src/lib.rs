@@ -40,6 +40,7 @@ pub enum Provider {
     Voe,
     Hoganas,
     Eksjo,
+    Pite,
 }
 
 impl Provider {
@@ -68,6 +69,7 @@ impl Provider {
             Provider::Voe => "voe",
             Provider::Hoganas => "hoganas",
             Provider::Eksjo => "eksjo",
+            Provider::Pite => "pite",
         }
     }
 }

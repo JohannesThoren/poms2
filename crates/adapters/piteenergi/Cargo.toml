@@ -1,0 +1,22 @@
+[package]
+name = "poms-adapter-piteenergi"
+edition.workspace = true
+version.workspace = true
+
+[[bin]]
+name = "piteenergi-adapter"
+path = "src/main.rs"
+
+[dependencies]
+poms-types = { path = "../../types" }
+poms-adapter-sdk = { path = "../../adapter-sdk" }
+poms-db = { path = "../../db" }
+tokio.workspace = true
+reqwest.workspace = true
+scraper.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+chrono-tz.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+async-trait.workspace = true
