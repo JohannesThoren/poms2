@@ -430,6 +430,21 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      # Required for the /admin login - generate a real random value (e.g.
+      # `openssl rand -hex 32`) and set it via a .env file next to this
+      # compose file. Never commit the real value.
+      ADMIN_SESSION_SECRET: "${ADMIN_SESSION_SECRET:?Set ADMIN_SESSION_SECRET in .env - generate with openssl rand -hex 32}"
+      # Host group that /admin login is restricted to (see host setup
+      # below). Override if you use a different group name.
+      ADMIN_GROUP: ${ADMIN_GROUP:-poms-admin}
+    volumes:
+      # /admin authenticates against the HOST's own users/passwords via
+      # PAM, not a separate app user database - so the container needs
+      # read access to the host's actual account files. Mount them
+      # read-only; the container never writes to these.
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/group:/etc/group:ro
     depends_on:
       postgres:
         condition: service_healthy

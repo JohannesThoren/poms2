@@ -30,6 +30,25 @@ docker compose up --build
 
 Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 
+## Admin-sidan (`/admin`)
+
+Ett status-/loggläge för drift, skyddat av inloggning mot **hostens egna Linux-användare och grupper** (samma mönster som docker-manager-projektet) - ingen separat lösenordsdatabas i appen.
+
+Engångssetup på servern som kör `docker compose`:
+
+```bash
+sudo groupadd poms-admin
+sudo usermod -aG poms-admin <ditt-användarnamn>
+```
+
+Skapa en `.env`-fil bredvid `docker-compose.yml` (committa den aldrig):
+
+```
+ADMIN_SESSION_SECRET=<kör: openssl rand -hex 32>
+```
+
+Logga sedan in på `/admin` med samma användarnamn/lösenord du loggar in på servern med. `frontend`-containern monterar hostens `/etc/passwd`, `/etc/shadow` och `/etc/group` read-only och verifierar via PAM - den har ingen egen kopia av lösenorden.
+
 ## Status
 
 - [x] Grundarkitektur (types, db, adapter-sdk, ingestion)
