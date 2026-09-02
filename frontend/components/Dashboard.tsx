@@ -25,6 +25,53 @@ function StatusDot({ status }: { status: string }) {
   );
 }
 
+function OutageTable({ outages }: { outages: Outage[] }) {
+  if (outages.length === 0) {
+    return <p className="text-sm text-[var(--muted)] py-8">Inga avbrott matchar det valda filtret.</p>;
+  }
+  return (
+    <table className="w-full text-sm border-collapse">
+      <thead>
+        <tr className="text-left text-[var(--muted)] border-b border-[var(--line)]">
+          <th className="font-normal py-2 pr-4 w-8"></th>
+          <th className="font-normal py-2 pr-4">Leverantör</th>
+          <th className="font-normal py-2 pr-4">Område</th>
+          <th className="font-normal py-2 pr-4 text-right">Kunder</th>
+          <th className="font-normal py-2 pr-4">Startade</th>
+          <th className="font-normal py-2">Beräknat klart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {outages.map((o) => (
+          <tr key={o.id} className="border-b border-[var(--line)]/60 hover:bg-[var(--panel)]">
+            <td className="py-2.5 pr-4">
+              <StatusDot status={o.status} />
+            </td>
+            <td className="py-2.5 pr-4 text-[var(--text)]">{providerName(o.provider)}</td>
+            <td className="py-2.5 pr-4 text-[var(--text)]">
+              {o.area_label}
+              <span className="block text-xs text-[var(--muted)]">
+                {STATUS_LABELS[o.status]}
+                {o.lat != null && o.lng != null && (
+                  <span className="font-mono">
+                    {" "}
+                    · {o.lat.toFixed(4)}, {o.lng.toFixed(4)}
+                  </span>
+                )}
+              </span>
+            </td>
+            <td className="py-2.5 pr-4 text-right font-mono">
+              {o.affected_customers != null ? o.affected_customers.toLocaleString("sv-SE") : "—"}
+            </td>
+            <td className="py-2.5 pr-4 font-mono text-[var(--muted)]">{formatTime(o.started_at)}</td>
+            <td className="py-2.5 font-mono text-[var(--muted)]">{formatTime(o.estimated_end_at)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: Outage[] }) {
   const [visible, setVisible] = useState<Set<FilterableStatus>>(new Set(FILTERABLE_STATUSES));
 
@@ -45,20 +92,21 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
     [outages, visible]
   );
 
-  const totalCustomers = filtered.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+  // Current means already affecting someone - fault (unplanned) or planned
+  // work that has actually started. Upcoming (not yet started) is a
+  // distinct, separate thing: nobody's power is out for it yet, so it
+  // gets its own section rather than being mixed into "current".
+  const current = useMemo(() => filtered.filter((o) => o.status !== "upcoming"), [filtered]);
+  const upcoming = useMemo(() => filtered.filter((o) => o.status === "upcoming"), [filtered]);
+
   const located = filtered.filter((o) => o.lat != null && o.lng != null);
 
-  // "Right now" should mean right now - upcoming (not-yet-started) planned
-  // work hasn't cut anyone's power yet, so it's excluded here regardless
-  // of the filter toggles above, which control what's *browsable* in the
-  // map/table rather than this headline figure.
-  const currentlyWithoutPower = outages
-    .filter((o) => o.status === "fault" || o.status === "planned")
-    .reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+  const currentlyWithoutPower = current.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+  const upcomingCustomers = upcoming.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
 
   const providerSummary = useMemo(() => {
     const byProvider = new Map<string, { active_count: number; total_customers: number }>();
-    for (const o of filtered) {
+    for (const o of current) {
       const entry = byProvider.get(o.provider) ?? { active_count: 0, total_customers: 0 };
       entry.active_count += 1;
       entry.total_customers += o.affected_customers ?? 0;
@@ -67,7 +115,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
     return Array.from(byProvider.entries())
       .map(([provider, v]) => ({ provider, ...v }))
       .sort((a, b) => a.provider.localeCompare(b.provider));
-  }, [filtered]);
+  }, [current]);
 
   return (
     <>
@@ -84,11 +132,6 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
             {currentlyWithoutPower.toLocaleString("sv-SE")}
           </div>
           <p className="text-sm text-[var(--muted)] mt-1">kunder utan ström just nu</p>
-          {visible.has("upcoming") && totalCustomers !== currentlyWithoutPower && (
-            <p className="text-xs text-[var(--muted)] mt-1">
-              varav {(totalCustomers - currentlyWithoutPower).toLocaleString("sv-SE")} rör kommande, ej påbörjat avbrott
-            </p>
-          )}
         </div>
       </header>
 
@@ -117,7 +160,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
 
       <section className="flex flex-wrap border-b border-[var(--line)]">
         {providerSummary.length === 0 && (
-          <div className="py-4 text-sm text-[var(--muted)]">Inga avbrott matchar filtret.</div>
+          <div className="py-4 text-sm text-[var(--muted)]">Inga aktuella avbrott matchar filtret.</div>
         )}
         {providerSummary.map((p) => (
           <div
@@ -138,49 +181,24 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
         <OutageMap outages={filtered} />
       </section>
 
-      <section className="flex-1 py-6">
-        <h2 className="text-sm text-[var(--muted)] mb-3">Aktuella avbrott ({filtered.length})</h2>
-        {filtered.length === 0 ? (
-          <p className="text-sm text-[var(--muted)] py-8">Inga avbrott matchar det valda filtret.</p>
-        ) : (
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="text-left text-[var(--muted)] border-b border-[var(--line)]">
-                <th className="font-normal py-2 pr-4 w-8"></th>
-                <th className="font-normal py-2 pr-4">Leverantör</th>
-                <th className="font-normal py-2 pr-4">Område</th>
-                <th className="font-normal py-2 pr-4 text-right">Kunder</th>
-                <th className="font-normal py-2 pr-4">Startade</th>
-                <th className="font-normal py-2">Beräknat klart</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((o) => (
-                <tr key={o.id} className="border-b border-[var(--line)]/60 hover:bg-[var(--panel)]">
-                  <td className="py-2.5 pr-4">
-                    <StatusDot status={o.status} />
-                  </td>
-                  <td className="py-2.5 pr-4 text-[var(--text)]">{providerName(o.provider)}</td>
-                  <td className="py-2.5 pr-4 text-[var(--text)]">
-                    {o.area_label}
-                    <span className="block text-xs text-[var(--muted)]">
-                      {STATUS_LABELS[o.status]}
-                      {o.lat != null && o.lng != null && (
-                        <span className="font-mono"> · {o.lat.toFixed(4)}, {o.lng.toFixed(4)}</span>
-                      )}
-                    </span>
-                  </td>
-                  <td className="py-2.5 pr-4 text-right font-mono">
-                    {o.affected_customers != null ? o.affected_customers.toLocaleString("sv-SE") : "—"}
-                  </td>
-                  <td className="py-2.5 pr-4 font-mono text-[var(--muted)]">{formatTime(o.started_at)}</td>
-                  <td className="py-2.5 font-mono text-[var(--muted)]">{formatTime(o.estimated_end_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <section className="py-6 border-b border-[var(--line)]">
+        <h2 className="text-sm text-[var(--muted)] mb-3">Aktuella avbrott ({current.length})</h2>
+        <OutageTable outages={current} />
       </section>
+
+      {visible.has("upcoming") && (
+        <section className="py-6 border-b border-[var(--line)]">
+          <h2 className="text-sm text-[var(--muted)] mb-3">
+            Kommande avbrott ({upcoming.length})
+            {upcomingCustomers > 0 && (
+              <span className="ml-2 text-xs">
+                · {upcomingCustomers.toLocaleString("sv-SE")} kunder berörs när de börjar
+              </span>
+            )}
+          </h2>
+          <OutageTable outages={upcoming} />
+        </section>
+      )}
 
       {resolved.length > 0 && (
         <section className="pb-10">
