@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0b0f14;
+  --panel: #10161d;
+  --line: #223041;
+  --text: #e7edf3;
+  --muted: #7c8b9a;
+  --amber: #f0a500;
+  --fault: #e5484d;
+  --planned: #f0a500;
+  --upcoming: #4c9fe8;
+  --resolved: #5b6b7a;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.pulse {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}

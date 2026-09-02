@@ -1,0 +1,127 @@
+import { getActiveOutages, getProviderSummary, getRecentlyResolved } from "@/lib/db";
+import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
+
+function StatusDot({ status }: { status: string }) {
+  const color =
+    status === "fault"
+      ? "var(--fault)"
+      : status === "planned"
+        ? "var(--planned)"
+        : status === "upcoming"
+          ? "var(--upcoming)"
+          : "var(--resolved)";
+  return (
+    <span
+      className={`inline-block h-2 w-2 rounded-full ${status === "fault" ? "pulse" : ""}`}
+      style={{ backgroundColor: color }}
+    />
+  );
+}
+
+export default async function Home() {
+  const [outages, summary, resolved] = await Promise.all([
+    getActiveOutages(),
+    getProviderSummary(),
+    getRecentlyResolved(10),
+  ]);
+
+  const totalCustomers = outages.reduce((sum, o) => sum + (o.affected_customers ?? 0), 0);
+  const activeProviders = summary.filter((s) => s.active_count > 0);
+  const now = new Date();
+
+  return (
+    <main className="flex-1 flex flex-col max-w-[1100px] w-full mx-auto px-6">
+      <header className="flex items-end justify-between pt-10 pb-6 border-b border-[var(--line)]">
+        <div>
+          <h1 className="text-[15px] font-medium tracking-normal text-[var(--text)]">POMS2</h1>
+          <p className="text-sm text-[var(--muted)] mt-0.5">Driftläge elnät, Sverige</p>
+        </div>
+        <div className="text-right">
+          <div className="font-mono text-4xl leading-none" style={{ color: totalCustomers > 0 ? "var(--fault)" : "var(--text)" }}>
+            {totalCustomers.toLocaleString("sv-SE")}
+          </div>
+          <p className="text-sm text-[var(--muted)] mt-1">kunder utan ström just nu</p>
+        </div>
+      </header>
+
+      <section className="flex flex-wrap border-b border-[var(--line)]">
+        {activeProviders.length === 0 && (
+          <div className="py-4 text-sm text-[var(--muted)]">Inga aktiva avbrott hos någon täckt leverantör.</div>
+        )}
+        {activeProviders.map((p) => (
+          <div key={p.provider} className="py-4 pr-8 mr-8 border-r border-[var(--line)] last:border-r-0 last:mr-0 last:pr-0">
+            <div className="text-sm text-[var(--text)]">{providerName(p.provider)}</div>
+            <div className="font-mono text-xl mt-1">{p.active_count}</div>
+            <div className="text-xs text-[var(--muted)]">
+              {p.total_customers.toLocaleString("sv-SE")} kunder
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <section className="flex-1 py-6">
+        <h2 className="text-sm text-[var(--muted)] mb-3">Aktuella avbrott ({outages.length})</h2>
+        {outages.length === 0 ? (
+          <p className="text-sm text-[var(--muted)] py-8">
+            Inga pågående eller planerade avbrott just nu hos de täckta leverantörerna.
+          </p>
+        ) : (
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="text-left text-[var(--muted)] border-b border-[var(--line)]">
+                <th className="font-normal py-2 pr-4 w-8"></th>
+                <th className="font-normal py-2 pr-4">Leverantör</th>
+                <th className="font-normal py-2 pr-4">Område</th>
+                <th className="font-normal py-2 pr-4 text-right">Kunder</th>
+                <th className="font-normal py-2 pr-4">Startade</th>
+                <th className="font-normal py-2">Beräknat klart</th>
+              </tr>
+            </thead>
+            <tbody>
+              {outages.map((o) => (
+                <tr key={o.id} className="border-b border-[var(--line)]/60 hover:bg-[var(--panel)]">
+                  <td className="py-2.5 pr-4">
+                    <StatusDot status={o.status} />
+                  </td>
+                  <td className="py-2.5 pr-4 text-[var(--text)]">{providerName(o.provider)}</td>
+                  <td className="py-2.5 pr-4 text-[var(--text)]">
+                    {o.area_label}
+                    <span className="block text-xs text-[var(--muted)]">{STATUS_LABELS[o.status]}</span>
+                  </td>
+                  <td className="py-2.5 pr-4 text-right font-mono">
+                    {o.affected_customers != null ? o.affected_customers.toLocaleString("sv-SE") : "—"}
+                  </td>
+                  <td className="py-2.5 pr-4 font-mono text-[var(--muted)]">{formatTime(o.started_at)}</td>
+                  <td className="py-2.5 font-mono text-[var(--muted)]">{formatTime(o.estimated_end_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {resolved.length > 0 && (
+        <section className="pb-10">
+          <h2 className="text-sm text-[var(--muted)] mb-3">Senast åtgärdade</h2>
+          <ul className="text-sm divide-y divide-[var(--line)]/60">
+            {resolved.map((o) => (
+              <li key={o.id} className="py-2 flex justify-between text-[var(--muted)]">
+                <span>
+                  {providerName(o.provider)} — {o.area_label}
+                </span>
+                <span className="font-mono">{formatTime(o.resolved_at)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <footer className="py-4 border-t border-[var(--line)] text-xs text-[var(--muted)]">
+        Uppdaterad {now.toLocaleTimeString("sv-SE")} · källor: Ellevio, Vattenfall, Kraftringen, Tekniska verken,
+        Öresundskraft, Växjö, Lerum, Västerbergslagens, Partille
+      </footer>
+    </main>
+  );
+}
