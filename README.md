@@ -43,7 +43,7 @@ Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 - [x] Frontend (Next.js, `/frontend`) - dashboard som läser direkt från `outages`-tabellen, alltid färsk rendering (`dynamic = "force-dynamic"`), interaktivt statusfilter
 - [ ] Jämtkraft (avbrottskartan var nere vid försök, 503 - försök igen senare)
 - [ ] Fler Digpro-kandidater: Falu Elnät (500-fel just nu), Härnösand Elnät (503), Hedemora Energi (503), Bergs Tingslags Elektriska (ingen anslutning)
-- [ ] Karlstads El (delad dansk tjänst "se.sms-service.dk", ej undersökt i detalj), Mälarenergi, Norrtälje Energi, Skellefteå Kraft (eget skräddarsytt system) - ej undersökta i detalj
+- [x] Skellefteå Kraft-adapter (`driftinfo3-api.skekraft.se/api/disturbances`, eget system, hittat via app.config.js)
 - [ ] Kalmar Energi använder bara en manuellt uppdaterad Google My Maps-karta, ingen realtids-API - troligen inte värt att bygga adapter för
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
 - [ ] Frontend

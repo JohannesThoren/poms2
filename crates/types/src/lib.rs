@@ -29,6 +29,7 @@ pub enum Provider {
     Partille,
     Linde,
     Gavle,
+    Skekraft,
 }
 
 impl Provider {
@@ -46,6 +47,7 @@ impl Provider {
             Provider::Partille => "partille",
             Provider::Linde => "linde",
             Provider::Gavle => "gavle",
+            Provider::Skekraft => "skekraft",
         }
     }
 }
