@@ -17,7 +17,8 @@ services:
   ingestion:
     build:
       context: .
-      dockerfile: services/ingestion/Dockerfile
+      dockerfile: Dockerfile
+      target: ingestion
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -29,7 +30,8 @@ services:
   ellevio-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/ellevio/Dockerfile
+      dockerfile: Dockerfile
+      target: ellevio-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -43,7 +45,8 @@ services:
   vattenfall-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/vattenfall/Dockerfile
+      dockerfile: Dockerfile
+      target: vattenfall-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -57,7 +60,8 @@ services:
   kraftringen-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/kraftringen/Dockerfile
+      dockerfile: Dockerfile
+      target: kraftringen-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -71,7 +75,8 @@ services:
   tekniskaverken-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/tekniskaverken/Dockerfile
+      dockerfile: Dockerfile
+      target: tekniskaverken-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -85,7 +90,8 @@ services:
   oresundskraft-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/oresundskraft/Dockerfile
+      dockerfile: Dockerfile
+      target: oresundskraft-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -102,7 +108,8 @@ services:
   vaxjo-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -119,7 +126,8 @@ services:
   lerum-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -136,7 +144,8 @@ services:
   vasterbergslagens-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -153,7 +162,8 @@ services:
   partille-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -170,7 +180,8 @@ services:
   linde-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -187,7 +198,8 @@ services:
   telge-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -203,7 +215,8 @@ services:
   malarenergi-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/malarenergi/Dockerfile
+      dockerfile: Dockerfile
+      target: malarenergi-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -217,7 +230,8 @@ services:
   upplandsenergi-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/upplandsenergi/Dockerfile
+      dockerfile: Dockerfile
+      target: upplandsenergi-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -231,7 +245,8 @@ services:
   voe-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/voe/Dockerfile
+      dockerfile: Dockerfile
+      target: voe-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -245,7 +260,8 @@ services:
   eksjo-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/eksjo/Dockerfile
+      dockerfile: Dockerfile
+      target: eksjo-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -259,7 +275,8 @@ services:
   piteenergi-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/piteenergi/Dockerfile
+      dockerfile: Dockerfile
+      target: piteenergi-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -273,7 +290,8 @@ services:
   karlshamn-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/karlshamn/Dockerfile
+      dockerfile: Dockerfile
+      target: karlshamn-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -287,7 +305,8 @@ services:
   gavle-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/tekla/Dockerfile
+      dockerfile: Dockerfile
+      target: tekla-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -307,7 +326,8 @@ services:
   harjeans-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/tekla/Dockerfile
+      dockerfile: Dockerfile
+      target: tekla-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -327,7 +347,8 @@ services:
   skekraft-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/skekraft/Dockerfile
+      dockerfile: Dockerfile
+      target: skekraft-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -341,7 +362,8 @@ services:
   karlstad-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/servicealert/Dockerfile
+      dockerfile: Dockerfile
+      target: servicealert-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -357,7 +379,8 @@ services:
   eskilstuna-strangnas-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/servicealert/Dockerfile
+      dockerfile: Dockerfile
+      target: servicealert-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -373,7 +396,8 @@ services:
   tranas-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/servicealert/Dockerfile
+      dockerfile: Dockerfile
+      target: servicealert-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -389,7 +413,8 @@ services:
   uddevalla-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/digpro/Dockerfile
+      dockerfile: Dockerfile
+      target: digpro-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -406,7 +431,8 @@ services:
   hoganas-adapter:
     build:
       context: .
-      dockerfile: crates/adapters/servicealert/Dockerfile
+      dockerfile: Dockerfile
+      target: servicealert-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms

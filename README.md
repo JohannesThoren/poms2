@@ -30,6 +30,8 @@ docker compose up --build
 
 Startar Postgres, kör migrationerna, och startar Ellevio-adaptern + ingestion.
 
+Alla Rust-tjänster (adaptrar + ingestion) byggs från en enda delad `Dockerfile` i repo-roten - en gemensam byggsteg kompilerar hela workspacet en gång (med BuildKit cache-mounts för cargo-registret och target-mappen), och varje tjänst pekar bara på sitt eget `target:`-steg för att plocka ut sin binär. Det håller ombyggnadstiden nere jämfört med att varje adapter kompilerar om alla delade dependencies (tokio, sqlx, reqwest, ...) från grunden.
+
 ## Admin-sidan (`/admin`)
 
 Ett status-/loggläge för drift, skyddat av inloggning mot **hostens egna Linux-användare och grupper** (samma mönster som docker-manager-projektet) - ingen separat lösenordsdatabas i appen.
