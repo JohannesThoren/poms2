@@ -4,11 +4,131 @@ use async_trait::async_trait;
 use chrono::Utc;
 use poms_adapter_sdk::Adapter;
 use poms_types::{OutageStatus, Provider, RawOutageEvent};
-use scraper::Html;
+use scraper::{Html, Selector};
+use std::collections::HashMap;
 
 pub use kommuner::KOMMUNER;
 
 const BASE_URL: &str = "https://avbrottskarta.ellevio.se";
+
+/// Ellevio redesigned this site (2026-09): the per-kommun page used to be
+/// server-rendered with a real customer count. Now it's a client-rendered
+/// app with only a static "#prerendered" snapshot in the initial HTML,
+/// and that snapshot no longer contains a customer count at all - the
+/// "Antal kunder berörda av strömavbrott" section is a `Laddar...`
+/// placeholder filled in by JavaScript we don't execute. All we can read
+/// server-side now is a count of *incidents* (oplanerade/planerade), not
+/// affected customers - so `affected_customers` is `None` for every
+/// Ellevio event going forward, a real drop in granularity versus before.
+///
+/// Worse, most of our kommun slugs no longer resolve to their own
+/// prerendered page at all - they fall back to a generic nationwide
+/// snapshot (`<h2>Aktuella strömavbrott just nu</h2>` + a per-län table),
+/// meaning Ellevio's routing no longer recognizes that slug. This adapter
+/// handles both shapes: kommun-specific pages are read as before (at
+/// reduced granularity), and any kommun that falls back to the nationwide
+/// table contributes to a single set of per-län events instead - better
+/// than silently losing that whole region's data, even though a whole
+/// län is far coarser than a kommun.
+#[derive(Debug, PartialEq)]
+enum PageResult {
+    /// This kommun's own page rendered correctly.
+    KommunSpecific { oplanerade: i32, planerade: i32 },
+    /// The slug wasn't recognized - Ellevio served the generic nationwide
+    /// per-län table instead.
+    NationwideFallback(Vec<(String, i32, i32)>),
+    /// Neither shape was found - the page changed again in some other way.
+    Unrecognized,
+}
+
+fn extract_leading_number(s: &str) -> Option<i32> {
+    let digits: String = s.trim().chars().take_while(|c| c.is_ascii_digit()).collect();
+    digits.parse().ok()
+}
+
+fn parse_page(html: &str) -> PageResult {
+    let document = Html::parse_document(html);
+    let h2_sel = Selector::parse("#prerendered h2").unwrap();
+
+    let Some(h2) = document.select(&h2_sel).next() else {
+        return PageResult::Unrecognized;
+    };
+    let h2_text: String = h2.text().collect();
+
+    if h2_text.contains("Aktuella strömavbrott i") {
+        let container_sel = Selector::parse("#prerendered").unwrap();
+        let Some(container) = document.select(&container_sel).next() else {
+            return PageResult::Unrecognized;
+        };
+        let full_text: String = container.text().collect::<Vec<_>>().join(" ");
+
+        if full_text.contains("Inga kunder berörda") {
+            return PageResult::KommunSpecific { oplanerade: 0, planerade: 0 };
+        }
+
+        let div_sel = Selector::parse("#prerendered > div").unwrap();
+        let mut oplanerade = 0;
+        let mut planerade = 0;
+        for div in document.select(&div_sel) {
+            let text: String = div.text().collect();
+            if text.contains("oplanerade") {
+                oplanerade = extract_leading_number(&text).unwrap_or(0);
+            } else if text.contains("planerade") {
+                planerade = extract_leading_number(&text).unwrap_or(0);
+            }
+        }
+        PageResult::KommunSpecific { oplanerade, planerade }
+    } else if h2_text.contains("Aktuella strömavbrott just nu") {
+        let row_sel = Selector::parse("table tbody tr").unwrap();
+        let td_sel = Selector::parse("td").unwrap();
+        let mut rows = Vec::new();
+
+        for tr in document.select(&row_sel) {
+            let tds: Vec<_> = tr.select(&td_sel).collect();
+            if tds.len() != 3 {
+                continue;
+            }
+            let lan: String = tds[0].text().collect::<Vec<_>>().join(" ").trim().to_string();
+            let oplanerade = extract_leading_number(&tds[1].text().collect::<String>()).unwrap_or(0);
+            let planerade = extract_leading_number(&tds[2].text().collect::<String>()).unwrap_or(0);
+            if !lan.is_empty() {
+                rows.push((lan, oplanerade, planerade));
+            }
+        }
+        PageResult::NationwideFallback(rows)
+    } else {
+        PageResult::Unrecognized
+    }
+}
+
+fn status_for(oplanerade: i32, planerade: i32) -> Option<OutageStatus> {
+    if oplanerade > 0 {
+        Some(OutageStatus::Fault)
+    } else if planerade > 0 {
+        Some(OutageStatus::Planned)
+    } else {
+        None
+    }
+}
+
+fn to_event(area_label: &str, source_id: &str, oplanerade: i32, planerade: i32) -> Option<RawOutageEvent> {
+    let status = status_for(oplanerade, planerade)?;
+    Some(RawOutageEvent {
+        provider: Provider::Ellevio,
+        source_id: source_id.to_string(),
+        status,
+        area_label: area_label.to_string(),
+        lat: None,
+        lng: None,
+        // Ellevio's redesigned page no longer exposes a customer count in
+        // the server-rendered HTML - see the module doc comment.
+        affected_customers: None,
+        reason: Some(format!("{oplanerade} oplanerade, {planerade} planerade avbrott")),
+        started_at: None,
+        estimated_end_at: None,
+        observed_at: Utc::now(),
+    })
+}
 
 pub struct EllevioAdapter {
     client: reqwest::Client,
@@ -18,95 +138,23 @@ impl EllevioAdapter {
     pub fn new() -> Self {
         Self {
             client: reqwest::Client::builder()
-                .user_agent("POMS2/0.1 (+https://github.com/JohannesThoren/POMS2)")
+                .user_agent("POMS2/0.1 (+https://github.com/JohannesThoren/poms2)")
                 .build()
                 .expect("failed to build HTTP client"),
         }
     }
 
-    /// Fetch and parse a single kommun's page. Returns `None` when there is
-    /// no ongoing outage there (the page says so explicitly), rather than
-    /// an event with a zero count - a "no outage" kommun shouldn't leave a
-    /// row behind for the ingestion service to have to resolve later.
-    async fn fetch_kommun(&self, kommun: &kommuner::Kommun) -> anyhow::Result<Option<RawOutageEvent>> {
+    async fn fetch_kommun(&self, kommun: &kommuner::Kommun) -> anyhow::Result<PageResult> {
         let url = format!("{BASE_URL}/kommun/{}/idag", kommun.slug);
         let body = self.client.get(&url).send().await?.text().await?;
-        Self::parse_kommun_page(kommun.name, &body)
-    }
-
-    /// Pulled out of `fetch_kommun` so it can be unit tested against saved
-    /// HTML fixtures without hitting the network.
-    fn parse_kommun_page(kommun_name: &str, html: &str) -> anyhow::Result<Option<RawOutageEvent>> {
-        let document = Html::parse_document(html);
-
-        // The server-rendered shell either says "Inga kunder berörda..."
-        // (nothing ongoing) or otherwise shows a customer count somewhere
-        // in the page text near "kunder berörda". We match on the whole
-        // document's text rather than a specific selector because the
-        // exact DOM node holding the count isn't confirmed against a live
-        // active outage yet - this is intentionally loose until we can
-        // check that against real data, at which point tightening this to
-        // a proper selector is a small follow-up, not a rewrite.
-        let text: String = document.root_element().text().collect::<Vec<_>>().join(" ");
-
-        if text.contains("Inga kunder berörda") {
-            return Ok(None);
-        }
-
-        // Look for "<N> kund" (kunder/kund berörda) anywhere in the page.
-        let count = extract_customer_count(&text);
-
-        let Some(affected_customers) = count else {
-            // Page didn't match either the "no outage" or "N kunder"
-            // shape - log and skip rather than guessing.
-            tracing::warn!(kommun = kommun_name, "could not parse customer count from page");
-            return Ok(None);
-        };
-
-        if affected_customers == 0 {
-            return Ok(None);
-        }
-
-        Ok(Some(RawOutageEvent {
-            provider: Provider::Ellevio,
-            // Ellevio only gives us an area-level aggregate, not
-            // individual outage ids - so the kommun name itself is the
-            // stable identity of "the current outage situation in this
-            // kommun". Ingestion upserts on (provider, source_id), which
-            // is exactly the collapsing behavior we want here.
-            source_id: kommun_name.to_lowercase(),
-            status: OutageStatus::Fault,
-            area_label: kommun_name.to_string(),
-            lat: None,
-            lng: None,
-            affected_customers: Some(affected_customers),
-            reason: None,
-            started_at: None,
-            estimated_end_at: None,
-            observed_at: Utc::now(),
-        }))
+        Ok(parse_page(&body))
     }
 }
 
-fn extract_customer_count(text: &str) -> Option<i32> {
-    // Find a run of digits immediately followed by " kund" (kund/kunder).
-    let bytes = text.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i].is_ascii_digit() {
-            let start = i;
-            while i < bytes.len() && bytes[i].is_ascii_digit() {
-                i += 1;
-            }
-            let rest = &text[i..];
-            if rest.trim_start().starts_with("kund") {
-                return text[start..i].parse().ok();
-            }
-        } else {
-            i += 1;
-        }
+impl Default for EllevioAdapter {
+    fn default() -> Self {
+        Self::new()
     }
-    None
 }
 
 #[async_trait]
@@ -117,22 +165,42 @@ impl Adapter for EllevioAdapter {
 
     async fn poll(&self) -> anyhow::Result<Vec<RawOutageEvent>> {
         let mut events = Vec::new();
+        // Collapses however many kommuner fall back to the nationwide
+        // table into one entry per län - the table is identical on every
+        // fallback page, so without this a busy län would otherwise
+        // produce dozens of duplicate rows (harmless after upsert, but
+        // wasteful).
+        let mut lan_fallback: HashMap<String, (i32, i32)> = HashMap::new();
+
         for kommun in KOMMUNER {
             match self.fetch_kommun(kommun).await {
-                Ok(Some(event)) => events.push(event),
-                Ok(None) => {}
+                Ok(PageResult::KommunSpecific { oplanerade, planerade }) => {
+                    if let Some(event) = to_event(kommun.name, &kommun.name.to_lowercase(), oplanerade, planerade) {
+                        events.push(event);
+                    }
+                }
+                Ok(PageResult::NationwideFallback(rows)) => {
+                    for (lan, oplanerade, planerade) in rows {
+                        lan_fallback.insert(lan, (oplanerade, planerade));
+                    }
+                }
+                Ok(PageResult::Unrecognized) => {
+                    tracing::warn!(kommun = kommun.name, "unrecognized Ellevio page shape");
+                }
                 Err(err) => {
                     tracing::warn!(kommun = kommun.name, error = %err, "failed to fetch kommun page");
                 }
             }
         }
-        Ok(events)
-    }
-}
 
-impl Default for EllevioAdapter {
-    fn default() -> Self {
-        Self::new()
+        for (lan, (oplanerade, planerade)) in lan_fallback {
+            let source_id = format!("lan-{}", lan.to_lowercase().replace(' ', "-"));
+            if let Some(event) = to_event(&lan, &source_id, oplanerade, planerade) {
+                events.push(event);
+            }
+        }
+
+        Ok(events)
     }
 }
 
@@ -141,25 +209,62 @@ mod tests {
     use super::*;
 
     #[test]
-    fn no_outage_page_returns_none() {
-        let html = "<html><body>Inga kunder berörda av strömavbrott i kommunen just nu</body></html>";
-        let result = EllevioAdapter::parse_kommun_page("Stockholm", html).unwrap();
-        assert!(result.is_none());
+    fn zero_case_kommun_specific_page_yields_no_event() {
+        let html = include_str!("../tests/fixtures/karlstad_zero.html");
+        let result = parse_page(html);
+        assert_eq!(result, PageResult::KommunSpecific { oplanerade: 0, planerade: 0 });
+        assert!(to_event("Karlstad", "karlstad", 0, 0).is_none());
     }
 
     #[test]
-    fn extracts_customer_count() {
-        assert_eq!(extract_customer_count("42 kunder berörda"), Some(42));
-        assert_eq!(extract_customer_count("1 kund berörd"), Some(1));
-        assert_eq!(extract_customer_count("no match here"), None);
+    fn active_kommun_specific_page_parses_counts() {
+        let html = include_str!("../tests/fixtures/kungsbacka_active.html");
+        let result = parse_page(html);
+        assert_eq!(result, PageResult::KommunSpecific { oplanerade: 37, planerade: 0 });
     }
 
     #[test]
-    fn outage_page_produces_event() {
-        let html = "<html><body>Aktuella strömavbrott i Karlstad. 17 kunder berörda av strömavbrott.</body></html>";
-        let result = EllevioAdapter::parse_kommun_page("Karlstad", html).unwrap().unwrap();
-        assert_eq!(result.area_label, "Karlstad");
-        assert_eq!(result.affected_customers, Some(17));
-        assert_eq!(result.source_id, "karlstad");
+    fn active_kommun_produces_fault_event() {
+        let event = to_event("Kungsbacka", "kungsbacka", 37, 0).unwrap();
+        assert_eq!(event.status, OutageStatus::Fault);
+        assert_eq!(event.affected_customers, None);
+    }
+
+    #[test]
+    fn planned_only_produces_planned_event() {
+        let event = to_event("Test", "test", 0, 5).unwrap();
+        assert_eq!(event.status, OutageStatus::Planned);
+    }
+
+    #[test]
+    fn fallback_page_parses_all_lan_rows() {
+        let html = include_str!("../tests/fixtures/knivsta_fallback.html");
+        let result = parse_page(html);
+        match result {
+            PageResult::NationwideFallback(rows) => {
+                assert_eq!(rows.len(), 7);
+                let halland = rows.iter().find(|(name, _, _)| name.contains("Halland")).unwrap();
+                assert_eq!(halland.1, 37);
+                assert_eq!(halland.2, 0);
+            }
+            other => panic!("expected NationwideFallback, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn poll_deduplicates_fallback_lan_across_many_kommuner() {
+        // Simulates what poll() does internally: many kommuner all
+        // returning the same fallback table should collapse to one event
+        // per län, not one per kommun.
+        let html = include_str!("../tests/fixtures/knivsta_fallback.html");
+        let mut lan_fallback: HashMap<String, (i32, i32)> = HashMap::new();
+        for _ in 0..10 {
+            if let PageResult::NationwideFallback(rows) = parse_page(html) {
+                for (lan, op, pl) in rows {
+                    lan_fallback.insert(lan, (op, pl));
+                }
+            }
+        }
+        assert_eq!(lan_fallback.len(), 7);
     }
 }

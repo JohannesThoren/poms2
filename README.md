@@ -54,7 +54,7 @@ Logga sedan in på `/admin` med samma användarnamn/lösenord du loggar in på s
 ## Status
 
 - [x] Grundarkitektur (types, db, adapter-sdk, ingestion)
-- [x] Ellevio-adapter (kommun-nivå, aggregerade kundantal)
+- [x] Ellevio-adapter (**omskriven 2026-09-04** - Ellevio bytte hela sidstrukturen och slutade visa kundantal i server-renderad HTML. Adaptern läser nu bara antal avbrottshändelser (oplanerade/planerade), och de flesta kommun-slugs faller numera tillbaka på en läns-nivå-tabell istället för en egen kommunsida - adaptern hanterar båda formaten och deduplicerar läns-fallbacken)
 - [x] Vattenfall-adapter (`incidents.json`, riktiga koordinater via polygon-centroid)
 - [x] Kraftringen-adapter (KML-feed, riktiga koordinater, saknar ortnamn - se modulkommentar)
 - [x] Tekniska verken-adapter (`api.tekniskaverken.net/outage/v1/public/outages`, rikast källan hittills)
