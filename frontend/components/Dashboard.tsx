@@ -74,6 +74,7 @@ function OutageTable({ outages }: { outages: Outage[] }) {
 
 export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: Outage[] }) {
   const [visible, setVisible] = useState<Set<FilterableStatus>>(new Set(FILTERABLE_STATUSES));
+  const [query, setQuery] = useState("");
 
   function toggle(status: FilterableStatus) {
     setVisible((prev) => {
@@ -87,10 +88,14 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
     });
   }
 
-  const filtered = useMemo(
-    () => outages.filter((o) => visible.has(o.status as FilterableStatus)),
-    [outages, visible]
-  );
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return outages.filter((o) => {
+      if (!visible.has(o.status as FilterableStatus)) return false;
+      if (!q) return true;
+      return o.area_label.toLowerCase().includes(q) || providerName(o.provider).toLowerCase().includes(q);
+    });
+  }, [outages, visible, query]);
 
   // Current means already affecting someone - fault (unplanned) or planned
   // work that has actually started. Upcoming (not yet started) is a
@@ -135,7 +140,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
         </div>
       </header>
 
-      <section className="flex items-center gap-2 py-4 border-b border-[var(--line)]">
+      <section className="flex items-center gap-2 py-4 border-b border-[var(--line)] flex-wrap">
         <span className="text-sm text-[var(--muted)] mr-2">Visa</span>
         {FILTERABLE_STATUSES.map((status) => {
           const active = visible.has(status);
@@ -156,6 +161,13 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
             </button>
           );
         })}
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Sök ort eller leverantör…"
+          className="ml-auto px-3 py-1.5 text-sm bg-[var(--panel)] border border-[var(--line)] text-[var(--text)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--upcoming)] w-full sm:w-64"
+        />
       </section>
 
       <section className="flex flex-wrap border-b border-[var(--line)]">

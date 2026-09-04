@@ -9,6 +9,22 @@ export const PROVIDER_NAMES: Record<string, string> = {
   lerum: "Lerum Energi",
   vasterbergslagens: "Västerbergslagens Elnät",
   partille: "Partille Energi",
+  linde: "Linde Energi",
+  gavle: "Gävle Energi",
+  skekraft: "Skellefteå Kraft",
+  karlstad: "Karlstads El",
+  eskilstuna_strangnas: "Eskilstuna Strängnäs Energi",
+  tranas: "Tranås Energi",
+  uddevalla: "Uddevalla Energi",
+  telge: "Telge Nät",
+  malarenergi: "Mälarenergi",
+  upplands_energi: "Upplands Energi",
+  voe: "Västra Orusts Energitjänst",
+  hoganas: "Höganäs Energi",
+  eksjo: "Eksjö Energi",
+  pite: "PiteEnergi",
+  harjeans: "Härjeåns Nät",
+  karlshamn: "Karlshamn Energi",
 };
 
 export function providerName(provider: string): string {

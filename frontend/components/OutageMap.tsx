@@ -42,6 +42,16 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
         }
       ).addTo(map);
 
+      // Reference overlay: place names, borders, roads - the base layer
+      // alone is just shaded terrain with no labels at all.
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom: 16,
+          pane: "overlayPane",
+        }
+      ).addTo(map);
+
       mapRef.current = map;
       markersRef.current = L.layerGroup().addTo(map);
     });
@@ -68,12 +78,17 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
           radius: 7,
           color,
           fillColor: color,
-          fillOpacity: 0.85,
-          weight: 1.5,
+          // Approximate (geocoded from area name, not a real point from
+          // the source) markers are shown hollow so it's clear at a
+          // glance they're not precise.
+          fillOpacity: o.approx ? 0.15 : 0.85,
+          weight: o.approx ? 2 : 1.5,
+          dashArray: o.approx ? "3,3" : undefined,
         });
 
         const customers =
           o.affected_customers != null ? `${o.affected_customers.toLocaleString("sv-SE")} kunder` : "";
+        const approxNote = o.approx ? `<br/><span style="color:#888;font-size:11px">Ungefärlig position (ortnamn)</span>` : "";
 
         marker.bindPopup(
           `<div style="font-family:sans-serif;font-size:13px;min-width:160px">` +
@@ -82,6 +97,7 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
             `<span style="color:${color}">${STATUS_LABELS[o.status] ?? o.status}</span>` +
             (customers ? ` &middot; ${customers}` : "") +
             `<br/><span style="color:#888">Startade ${formatTime(o.started_at)}</span>` +
+            approxNote +
             `</div>`
         );
 

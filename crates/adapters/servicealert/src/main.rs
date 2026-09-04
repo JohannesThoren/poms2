@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     let customer_id = env_or_die("SERVICEALERT_CUSTOMER_ID");
 
     let provider = parse_provider(&provider_name);
-    let adapter_name: &'static str = Box::leak(format!("servicealert-{provider_name}").into_boxed_str());
+    let adapter_name: &'static str = Box::leak(provider_name.clone().into_boxed_str());
 
     let pool = poms_db::connect().await?;
     let sink = PostgresEventSink::new(pool);

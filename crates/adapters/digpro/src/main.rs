@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
 
     let provider_name = env_or_die("DIGPRO_PROVIDER");
     let provider = parse_provider(&provider_name);
-    let adapter_name: &'static str = Box::leak(format!("digpro-{provider_name}").into_boxed_str());
+    let adapter_name: &'static str = Box::leak(provider_name.clone().into_boxed_str());
 
     let pool = poms_db::connect().await?;
     let sink = PostgresEventSink::new(pool);

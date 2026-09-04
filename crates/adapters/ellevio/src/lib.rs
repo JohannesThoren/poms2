@@ -12,24 +12,21 @@ pub use kommuner::KOMMUNER;
 const BASE_URL: &str = "https://avbrottskarta.ellevio.se";
 
 /// Ellevio redesigned this site (2026-09): the per-kommun page used to be
-/// server-rendered with a real customer count. Now it's a client-rendered
-/// app with only a static "#prerendered" snapshot in the initial HTML,
-/// and that snapshot no longer contains a customer count at all - the
-/// "Antal kunder berörda av strömavbrott" section is a `Laddar...`
-/// placeholder filled in by JavaScript we don't execute. All we can read
-/// server-side now is a count of *incidents* (oplanerade/planerade), not
-/// affected customers - so `affected_customers` is `None` for every
-/// Ellevio event going forward, a real drop in granularity versus before.
+/// server-rendered with the customer count directly in a fixed spot. Now
+/// most kommun slugs don't resolve to their own page at all - they fall
+/// back to a generic nationwide snapshot (`<h2>Aktuella strömavbrott just
+/// nu</h2>` + a per-län table titled "Kunder berörda av strömavbrott just
+/// nu" once hydrated). That table's two numbers - "Oplanerade" and
+/// "Planerade" - are customer counts split by outage type, not incident
+/// counts (confirmed: a single-kommun page like Kungsbacka's "37
+/// oplanerade" exactly matches Hallands län's "37" in the nationwide
+/// table, which only makes sense if both are customer counts and
+/// Kungsbacka is the only affected place in that län right now).
 ///
-/// Worse, most of our kommun slugs no longer resolve to their own
-/// prerendered page at all - they fall back to a generic nationwide
-/// snapshot (`<h2>Aktuella strömavbrott just nu</h2>` + a per-län table),
-/// meaning Ellevio's routing no longer recognizes that slug. This adapter
-/// handles both shapes: kommun-specific pages are read as before (at
-/// reduced granularity), and any kommun that falls back to the nationwide
-/// table contributes to a single set of per-län events instead - better
-/// than silently losing that whole region's data, even though a whole
-/// län is far coarser than a kommun.
+/// This adapter handles both page shapes: kommun-specific pages are read
+/// as before, and any kommun whose slug no longer resolves contributes to
+/// a single set of per-län events instead - coarser than a kommun, but
+/// far better than silently losing that whole region's data.
 #[derive(Debug, PartialEq)]
 enum PageResult {
     /// This kommun's own page rendered correctly.
@@ -113,6 +110,13 @@ fn status_for(oplanerade: i32, planerade: i32) -> Option<OutageStatus> {
 
 fn to_event(area_label: &str, source_id: &str, oplanerade: i32, planerade: i32) -> Option<RawOutageEvent> {
     let status = status_for(oplanerade, planerade)?;
+    // Whichever bucket triggered the status is the customer count that
+    // actually applies to it - "oplanerade"/"planerade" are customer
+    // counts split by type, not incident counts (see module docs).
+    let affected_customers = match status {
+        OutageStatus::Fault => oplanerade,
+        _ => planerade,
+    };
     Some(RawOutageEvent {
         provider: Provider::Ellevio,
         source_id: source_id.to_string(),
@@ -120,10 +124,8 @@ fn to_event(area_label: &str, source_id: &str, oplanerade: i32, planerade: i32) 
         area_label: area_label.to_string(),
         lat: None,
         lng: None,
-        // Ellevio's redesigned page no longer exposes a customer count in
-        // the server-rendered HTML - see the module doc comment.
-        affected_customers: None,
-        reason: Some(format!("{oplanerade} oplanerade, {planerade} planerade avbrott")),
+        affected_customers: Some(affected_customers),
+        reason: None,
         started_at: None,
         estimated_end_at: None,
         observed_at: Utc::now(),
@@ -227,7 +229,7 @@ mod tests {
     fn active_kommun_produces_fault_event() {
         let event = to_event("Kungsbacka", "kungsbacka", 37, 0).unwrap();
         assert_eq!(event.status, OutageStatus::Fault);
-        assert_eq!(event.affected_customers, None);
+        assert_eq!(event.affected_customers, Some(37));
     }
 
     #[test]
