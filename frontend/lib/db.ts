@@ -27,6 +27,9 @@ export type Outage = {
   area_label: string;
   lat: number | null;
   lng: number | null;
+  /** [lat, lng][] outline of the affected area, when the source gives one
+   * (Vattenfall, Kraftringen, Skellefteå Kraft) - null otherwise. */
+  polygon: [number, number][] | null;
   /** True when `lat`/`lng` came from geocoding `area_label` after the
    * fact (see `lib/geocode.ts`), not from the source itself - the map
    * should render these less precisely than a source-provided point. */
@@ -59,7 +62,7 @@ function withGeocodedFallback<T extends { lat: number | null; lng: number | null
 
 export async function getActiveOutages(): Promise<Outage[]> {
   const { rows } = await pool.query<Omit<Outage, "approx">>(
-    `SELECT id, provider, source_id, status, area_label, lat, lng,
+    `SELECT id, provider, source_id, status, area_label, lat, lng, polygon,
             affected_customers, reason, started_at, estimated_end_at,
             resolved_at, last_observed_at
      FROM outages
@@ -71,7 +74,7 @@ export async function getActiveOutages(): Promise<Outage[]> {
 
 export async function getRecentlyResolved(limit = 15): Promise<Outage[]> {
   const { rows } = await pool.query<Omit<Outage, "approx">>(
-    `SELECT id, provider, source_id, status, area_label, lat, lng,
+    `SELECT id, provider, source_id, status, area_label, lat, lng, polygon,
             affected_customers, reason, started_at, estimated_end_at,
             resolved_at, last_observed_at
      FROM outages

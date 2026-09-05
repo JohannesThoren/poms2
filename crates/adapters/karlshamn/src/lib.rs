@@ -150,6 +150,7 @@ fn to_event(msg: &Message, upcoming: bool) -> Option<RawOutageEvent> {
         area_label: msg.header.clone(),
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers: None,
         reason: Some(plain_message),
         started_at,

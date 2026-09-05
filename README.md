@@ -54,7 +54,8 @@ Logga sedan in på `/admin` med samma användarnamn/lösenord du loggar in på s
 ## Status
 
 - [x] Grundarkitektur (types, db, adapter-sdk, ingestion)
-- [x] Ellevio-adapter (**omskriven 2026-09-04** - Ellevio bytte hela sidstrukturen och slutade visa kundantal i server-renderad HTML. Adaptern läser nu bara antal avbrottshändelser (oplanerade/planerade), och de flesta kommun-slugs faller numera tillbaka på en läns-nivå-tabell istället för en egen kommunsida - adaptern hanterar båda formaten och deduplicerar läns-fallbacken)
+- [x] Karta med polygon-stöd: Vattenfall, Kraftringen och Skellefteå Kraft ger ett riktigt avbrottsområde (inte bara en punkt) - lagras i `outages.polygon` (JSONB) och ritas ut på kartan vid inzoomning (zoom ≥ 9), utöver punktmarkören som alltid visas
+- [x] Ellevio-adapter (**omskriven igen 2026-09-05**) - upptäckte att `/län/{slug}/idag` server-renderar en fullständig, live kommunnedbrytning för det länet (till skillnad från `/län/{slug}` utan `/idag`, som bara ger samma nationella fallback). Adaptern upptäcker nu länslistan dynamiskt från förstasidan och hämtar kommunnivå-data från varje läns egen sida - täcker alla ~76 kommuner i Ellevios nuvarande område (7 län: Dalarna, Gävleborg, Halland, Stockholm, Värmland, Västra Götaland, Örebro), självuppdaterande, ingen hårdkodad kommunlista längre. Oplanerade/Planerade är kundantal (bekräftat).
 - [x] Vattenfall-adapter (`incidents.json`, riktiga koordinater via polygon-centroid)
 - [x] Kraftringen-adapter (KML-feed, riktiga koordinater, saknar ortnamn - se modulkommentar)
 - [x] Tekniska verken-adapter (`api.tekniskaverken.net/outage/v1/public/outages`, rikast källan hittills)

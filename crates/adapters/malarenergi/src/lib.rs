@@ -94,6 +94,7 @@ fn to_event(item: &OutageItem, now: DateTime<Utc>) -> Option<RawOutageEvent> {
         area_label: item.affected_areas.clone(),
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers: Some(item.currently_affected_connection_points),
         reason: item.description.clone().or_else(|| Some(item.status.clone())),
         started_at,

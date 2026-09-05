@@ -72,6 +72,7 @@ fn to_event(group: &Group, now: DateTime<Utc>) -> RawOutageEvent {
         area_label: first.map(|d| d.subject.clone()).unwrap_or_else(|| format!("Avbrott #{}", group.id)),
         lat: None,
         lng: None,
+        polygon: None,
         // No customer-count field exists in this feed at all.
         affected_customers: None,
         reason: first.map(|d| d.message.clone()),

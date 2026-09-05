@@ -40,6 +40,10 @@ pub struct RawPlacemark {
     /// always comes last in this feed, so taking the last block gives us
     /// the marker location rather than a polygon vertex.
     lon_lat: Option<(f64, f64)>,
+    /// The Polygon ring's vertices as (lat, lng), when this placemark has
+    /// one - a `<coordinates>` block with more than one space-separated
+    /// tuple is a ring, not a point.
+    polygon: Option<Vec<(f64, f64)>>,
 }
 
 pub fn parse_kml(xml: &str) -> anyhow::Result<Vec<RawPlacemark>> {
@@ -50,6 +54,7 @@ pub fn parse_kml(xml: &str) -> anyhow::Result<Vec<RawPlacemark>> {
     let mut current: Option<RawPlacemark> = None;
     let mut current_data_name: Option<String> = None;
     let mut last_coords: Option<(f64, f64)> = None;
+    let mut last_polygon: Option<Vec<(f64, f64)>> = None;
     let mut tag_stack: Vec<String> = Vec::new();
     let mut buf = Vec::new();
 
@@ -61,6 +66,7 @@ pub fn parse_kml(xml: &str) -> anyhow::Result<Vec<RawPlacemark>> {
                 if name == "Placemark" {
                     current = Some(RawPlacemark::default());
                     last_coords = None;
+                    last_polygon = None;
                 }
                 if name == "Data" {
                     current_data_name = e
@@ -76,6 +82,7 @@ pub fn parse_kml(xml: &str) -> anyhow::Result<Vec<RawPlacemark>> {
                 if name == "Placemark" {
                     if let Some(mut pm) = current.take() {
                         pm.lon_lat = last_coords;
+                        pm.polygon = last_polygon.take();
                         placemarks.push(pm);
                     }
                 }
@@ -99,17 +106,29 @@ pub fn parse_kml(xml: &str) -> anyhow::Result<Vec<RawPlacemark>> {
                         }
                     }
                     "coordinates" => {
-                        // "lon,lat,alt" - possibly multiple space-separated
-                        // tuples for a polygon ring; we only want a single
-                        // point's worth here since Point coordinates are
-                        // always a single tuple.
-                        if let Some(first_tuple) = text.split_whitespace().next() {
-                            let parts: Vec<&str> = first_tuple.split(',').collect();
-                            if parts.len() >= 2 {
-                                if let (Ok(lon), Ok(lat)) = (parts[0].parse(), parts[1].parse()) {
-                                    last_coords = Some((lon, lat));
+                        // "lon,lat,alt" tuples, space-separated. A single
+                        // tuple is a Point; more than one is a Polygon
+                        // ring (LinearRing) - capture both shapes.
+                        let tuples: Vec<(f64, f64)> = text
+                            .split_whitespace()
+                            .filter_map(|tuple| {
+                                let parts: Vec<&str> = tuple.split(',').collect();
+                                if parts.len() < 2 {
+                                    return None;
                                 }
-                            }
+                                let lon: f64 = parts[0].parse().ok()?;
+                                let lat: f64 = parts[1].parse().ok()?;
+                                Some((lon, lat))
+                            })
+                            .collect();
+
+                        if tuples.len() == 1 {
+                            last_coords = Some(tuples[0]);
+                        } else if tuples.len() > 1 {
+                            // Store as (lat, lng) to match RawOutageEvent's
+                            // convention, even though the source order is
+                            // (lon, lat).
+                            last_polygon = Some(tuples.iter().map(|(lon, lat)| (*lat, *lon)).collect());
                         }
                     }
                     _ => {}
@@ -184,6 +203,7 @@ pub fn to_event(pm: &RawPlacemark) -> Option<RawOutageEvent> {
         area_label: format!("Avbrott #{outage_id}"),
         lat: pm.lon_lat.map(|(_, lat)| lat),
         lng: pm.lon_lat.map(|(lon, _)| lon),
+        polygon: pm.polygon.clone(),
         affected_customers: Some(affected_customers),
         reason: pm.data.get("note_external").filter(|s| !s.is_empty()).cloned(),
         started_at,
@@ -313,6 +333,7 @@ mod tests {
             style_url: "inactive_outage".to_string(),
             data,
             lon_lat: Some((13.0, 55.7)),
+            polygon: None,
         };
         let event = to_event(&pm).unwrap();
         assert_eq!(event.status, OutageStatus::Resolved);

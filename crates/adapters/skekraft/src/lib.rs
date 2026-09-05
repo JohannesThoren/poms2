@@ -110,6 +110,8 @@ fn to_event(d: &Disturbance, now: DateTime<Utc>) -> RawOutageEvent {
         .as_ref()
         .map(|p| (p.lat, p.lng))
         .or_else(|| polygon_centroid(&d.coordinates_lat_lng));
+    let polygon = (d.coordinates_lat_lng.len() >= 3)
+        .then(|| d.coordinates_lat_lng.iter().map(|p| (p.lat, p.lng)).collect());
 
     RawOutageEvent {
         provider: Provider::Skekraft,
@@ -118,6 +120,7 @@ fn to_event(d: &Disturbance, now: DateTime<Utc>) -> RawOutageEvent {
         area_label: format!("Avbrott #{}", d.disturbance_id),
         lat: coord.map(|(lat, _)| lat),
         lng: coord.map(|(_, lng)| lng),
+        polygon,
         affected_customers: Some(d.affected_customers),
         reason: (!d.description.trim().is_empty()).then(|| d.description.clone()),
         started_at,

@@ -12,48 +12,79 @@ const STATUS_COLOR: Record<string, string> = {
   resolved: "#5b6b7a",
 };
 
+// Below this zoom, individual area outlines are too small to read and just
+// clutter the overview - only draw them once someone's zoomed in close
+// enough that a polygon actually adds detail over the point marker.
+const POLYGON_MIN_ZOOM = 9;
+
 export function OutageMap({ outages }: { outages: Outage[] }) {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
+  const polygonsRef = useRef<L.LayerGroup | null>(null);
+  // Kept in sync with the `outages` prop so the zoomend handler (attached
+  // once, outside React's render cycle) always sees the current list.
+  const outagesRef = useRef<Outage[]>(outages);
+  outagesRef.current = outages;
 
   const located = outages.filter((o) => o.lat != null && o.lng != null);
+
+  function redrawPolygons(Lmod: typeof L) {
+    const group = polygonsRef.current;
+    const map = mapRef.current;
+    if (!group || !map) return;
+    group.clearLayers();
+
+    if (map.getZoom() < POLYGON_MIN_ZOOM) return;
+
+    for (const o of outagesRef.current) {
+      if (!o.polygon || o.polygon.length < 3) continue;
+      const color = STATUS_COLOR[o.status] ?? STATUS_COLOR.resolved;
+      Lmod.polygon(o.polygon, {
+        color,
+        weight: 1.5,
+        fillColor: color,
+        fillOpacity: 0.2,
+      }).addTo(group);
+    }
+  }
 
   // Init map once.
   useEffect(() => {
     let cancelled = false;
 
-    import("leaflet").then((L) => {
+    import("leaflet").then((Lmod) => {
       if (cancelled || !mapDivRef.current || mapRef.current) return;
 
-      const map = L.map(mapDivRef.current, {
+      const map = Lmod.map(mapDivRef.current, {
         center: [62.5, 16.5], // roughly the middle of Sweden
         zoom: 5,
         zoomControl: true,
         attributionControl: true,
       });
 
-      L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-        {
+      Lmod
+        .tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
           attribution:
             'Tiles &copy; <a href="https://www.esri.com">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
           maxZoom: 16,
-        }
-      ).addTo(map);
+        })
+        .addTo(map);
 
       // Reference overlay: place names, borders, roads - the base layer
       // alone is just shaded terrain with no labels at all.
-      L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
-        {
+      Lmod
+        .tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
           maxZoom: 16,
           pane: "overlayPane",
-        }
-      ).addTo(map);
+        })
+        .addTo(map);
 
       mapRef.current = map;
-      markersRef.current = L.layerGroup().addTo(map);
+      polygonsRef.current = Lmod.layerGroup().addTo(map);
+      markersRef.current = Lmod.layerGroup().addTo(map);
+
+      map.on("zoomend", () => redrawPolygons(Lmod));
     });
 
     return () => {
@@ -64,17 +95,17 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Redraw markers whenever the (filtered) outage list changes.
+  // Redraw markers + polygons whenever the (filtered) outage list changes.
   useEffect(() => {
     let cancelled = false;
 
-    import("leaflet").then((L) => {
+    import("leaflet").then((Lmod) => {
       if (cancelled || !markersRef.current) return;
       markersRef.current.clearLayers();
 
       for (const o of located) {
         const color = STATUS_COLOR[o.status] ?? STATUS_COLOR.resolved;
-        const marker = L.circleMarker([o.lat as number, o.lng as number], {
+        const marker = Lmod.circleMarker([o.lat as number, o.lng as number], {
           radius: 7,
           color,
           fillColor: color,
@@ -103,11 +134,14 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
 
         marker.addTo(markersRef.current!);
       }
+
+      redrawPolygons(Lmod);
     });
 
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [located]);
 
   return (

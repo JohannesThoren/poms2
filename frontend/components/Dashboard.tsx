@@ -73,12 +73,12 @@ function OutageTable({ outages }: { outages: Outage[] }) {
 }
 
 export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: Outage[] }) {
-  // "Planerat avbrott" starts off by default - it's the least urgent
-  // category (already-scheduled maintenance), so hiding it by default
-  // keeps the view focused on faults and upcoming work unless someone
-  // explicitly wants to see planned jobs too.
+  // "Kommande" (upcoming, not yet started) starts off by default - it's
+  // the least urgent category, so hiding it keeps the view focused on
+  // faults and already-ongoing planned work unless someone explicitly
+  // wants to see future-scheduled jobs too.
   const [visible, setVisible] = useState<Set<FilterableStatus>>(
-    new Set(FILTERABLE_STATUSES.filter((s) => s !== "planned"))
+    new Set(FILTERABLE_STATUSES.filter((s) => s !== "upcoming"))
   );
   const [query, setQuery] = useState("");
 

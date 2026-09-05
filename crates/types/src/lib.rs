@@ -116,6 +116,13 @@ pub struct RawOutageEvent {
     /// give area-level aggregates (e.g. Ellevio).
     pub lat: Option<f64>,
     pub lng: Option<f64>,
+    /// The affected area's outline, as (lat, lng) vertices, when the
+    /// source gives one (Vattenfall, Kraftringen, Skellefteå Kraft all
+    /// do). `None` for sources that only give a point or an area-level
+    /// aggregate. Stored alongside `lat`/`lng` rather than instead of them
+    /// - the point is still what's used for the map marker at low zoom,
+    /// the polygon is an optional detail shown once zoomed in.
+    pub polygon: Option<Vec<(f64, f64)>>,
     /// Number of affected customers, when known.
     pub affected_customers: Option<i32>,
     pub reason: Option<String>,

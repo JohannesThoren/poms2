@@ -133,16 +133,17 @@ async fn upsert_outage(
 
     sqlx::query(
         "INSERT INTO outages (
-            provider, source_id, status, area_label, lat, lng,
+            provider, source_id, status, area_label, lat, lng, polygon,
             affected_customers, reason, started_at, estimated_end_at,
             resolved_at, first_observed_at, last_observed_at
          )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $13)
          ON CONFLICT (provider, source_id) DO UPDATE SET
             status = EXCLUDED.status,
             area_label = EXCLUDED.area_label,
             lat = EXCLUDED.lat,
             lng = EXCLUDED.lng,
+            polygon = EXCLUDED.polygon,
             affected_customers = EXCLUDED.affected_customers,
             reason = EXCLUDED.reason,
             started_at = COALESCE(outages.started_at, EXCLUDED.started_at),
@@ -157,6 +158,7 @@ async fn upsert_outage(
     .bind(&event.area_label)
     .bind(event.lat)
     .bind(event.lng)
+    .bind(serde_json::to_value(&event.polygon)?)
     .bind(event.affected_customers)
     .bind(&event.reason)
     .bind(event.started_at)

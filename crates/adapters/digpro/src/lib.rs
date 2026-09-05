@@ -170,6 +170,7 @@ fn to_event(provider: Provider, pm: &RawPlacemark) -> Option<RawOutageEvent> {
         area_label: format!("Avbrott #{outage_id}"),
         lat: pm.lon_lat.map(|(_, lat)| lat),
         lng: pm.lon_lat.map(|(lon, _)| lon),
+        polygon: None,
         affected_customers: Some(affected_customers),
         reason: pm.data.get("note_external").filter(|s| !s.is_empty()).cloned(),
         started_at,

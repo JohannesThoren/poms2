@@ -140,6 +140,7 @@ fn to_event(item: &ParsedItem, now: DateTime<Utc>) -> Option<RawOutageEvent> {
         area_label: item.description.clone().unwrap_or_else(|| format!("Avbrott #{}", item.id)),
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers,
         reason: item.description.clone(),
         started_at,

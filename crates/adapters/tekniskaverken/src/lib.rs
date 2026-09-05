@@ -96,6 +96,7 @@ fn to_event(outage: &Outage) -> Option<RawOutageEvent> {
         area_label: area_label(&outage.districts),
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers: outage.affected_customers,
         reason: outage.cause.clone(),
         started_at,

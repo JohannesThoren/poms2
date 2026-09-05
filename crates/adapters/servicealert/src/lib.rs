@@ -121,6 +121,7 @@ fn to_event(provider: Provider, msg: &WebMessage, now: DateTime<Utc>) -> RawOuta
         area_label,
         lat: coord.map(|(lat, _)| lat),
         lng: coord.map(|(_, lng)| lng),
+        polygon: None,
         // No customer count field exists in this feed - the number of
         // affected *addresses* is the closest proxy available, and is
         // likely an undercount of actual customers per address.

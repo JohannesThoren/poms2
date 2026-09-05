@@ -111,6 +111,7 @@ fn to_event(interruption: &Interruption, areas: &HashMap<i64, Area>, now: DateTi
         area_label: area.map(|a| a.name.clone()).unwrap_or_else(|| format!("Område #{}", interruption.area_id)),
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers: interruption.customers.or(area.map(|a| a.customers)),
         reason: interruption.message.clone().or_else(|| interruption.status.clone()),
         started_at,

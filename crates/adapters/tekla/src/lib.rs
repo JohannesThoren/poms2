@@ -221,6 +221,7 @@ fn to_event(
         area_label,
         lat: coord.map(|(_, lat)| lat),
         lng: coord.map(|(lon, _)| lon),
+        polygon: None,
         affected_customers: Some(outage.cc),
         reason: outage.reason.clone(),
         started_at,

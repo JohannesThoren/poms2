@@ -78,6 +78,16 @@ fn polygon_centroid(polygon: &[f64]) -> Option<(f64, f64)> {
     Some((lat_sum / n, lng_sum / n))
 }
 
+/// The polygon as (lat, lng) vertex pairs, when the flat list is
+/// well-formed - `None` (not stored) rather than a degenerate 0- or
+/// 1-point "polygon" if it isn't.
+fn polygon_vertices(polygon: &[f64]) -> Option<Vec<(f64, f64)>> {
+    if polygon.len() < 6 || polygon.len() % 2 != 0 {
+        return None;
+    }
+    Some(polygon.chunks(2).map(|pair| (pair[0], pair[1])).collect())
+}
+
 /// Parses a "YYYY-MM-DD HH:MM" timestamp as Europe/Stockholm local time and
 /// converts to UTC. Vattenfall's feed gives no timezone marker, and Sweden
 /// alternates CET/CEST, so a fixed UTC+1 or +2 offset would be wrong for
@@ -112,6 +122,7 @@ impl VattenfallAdapter {
         let (lat, lng) = polygon_centroid(&incident.polygon)
             .map(|(a, b)| (Some(a), Some(b)))
             .unwrap_or((None, None));
+        let polygon = polygon_vertices(&incident.polygon);
 
         RawOutageEvent {
             provider: Provider::Vattenfall,
@@ -120,6 +131,7 @@ impl VattenfallAdapter {
             area_label: incident.placenames.clone(),
             lat,
             lng,
+            polygon,
             affected_customers: Some(incident.affected_customers),
             reason: Some(incident.description.clone()),
             started_at: parse_stockholm_time(&incident.start_time),

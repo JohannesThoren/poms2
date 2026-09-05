@@ -142,6 +142,7 @@ fn to_event(item: &ParsedItem, now: DateTime<Utc>) -> Option<RawOutageEvent> {
         area_label: if item.title.is_empty() { item.area.clone() } else { item.title.clone() },
         lat: None,
         lng: None,
+        polygon: None,
         affected_customers: None,
         reason: item.description.clone(),
         started_at,
