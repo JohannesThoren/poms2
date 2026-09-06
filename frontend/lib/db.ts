@@ -121,7 +121,7 @@ export type ProviderStatus = {
  */
 export async function getProviderStatus(): Promise<ProviderStatus[]> {
   const { rows } = await pool.query(
-    `SELECT h.provider,
+    `SELECT COALESCE(h.provider, o.provider) AS provider,
             h.last_poll_at,
             h.last_success_at,
             h.last_error,
