@@ -57,6 +57,18 @@ struct ProfileMessages {
     web_messages: Vec<WebMessage>,
 }
 
+/// `serde(default)` alone only covers a *missing* key - ServiceAlert's
+/// API sometimes sends this field as an explicit JSON `null` instead of
+/// omitting it or using `[]`, which still fails to deserialize into
+/// `Vec<LatLng>` without this. Treats `null` the same as "not present".
+fn null_to_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Default + serde::Deserialize<'de>,
+{
+    Ok(Option::deserialize(deserializer)?.unwrap_or_default())
+}
+
 #[derive(Debug, Deserialize)]
 struct WebMessage {
     id: i64,
@@ -66,7 +78,7 @@ struct WebMessage {
     date_expire_utc: DateTime<Utc>,
     #[serde(rename = "dateDelayUtc")]
     date_delay_utc: DateTime<Utc>,
-    #[serde(rename = "affectedAddressesCoordinates", default)]
+    #[serde(rename = "affectedAddressesCoordinates", default, deserialize_with = "null_to_default")]
     affected_addresses_coordinates: Vec<LatLng>,
 }
 
