@@ -20,6 +20,10 @@ If you're an individual, for personal, non-commercial use:
 
 Having access to this repo (e.g. because it's public) doesn't count as permission.
 
+## Copyright notice
+
+The copyright notice above must stay intact, unmodified, in every copy — including modified versions.
+
 ## If you modify it
 
 Any changes you make must be published publicly, for free, under this same license — even if you never share or run the modified version. Modified versions can't be kept private.
