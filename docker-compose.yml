@@ -443,6 +443,24 @@ services:
       ingestion:
         condition: service_started
 
+  halmstad-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: digpro-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: halmstad
+      DIGPRO_BASE_URL: https://dpwebmap.hem.se
+      DIGPRO_CUST: hsd
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   hoganas-adapter:
     build:
       context: .

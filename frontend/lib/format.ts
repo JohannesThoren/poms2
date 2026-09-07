@@ -26,6 +26,7 @@ export const PROVIDER_NAMES: Record<string, string> = {
   harjeans: "Härjeåns Nät",
   karlshamn: "Karlshamn Energi",
   umea: "Umeå Energi",
+  halmstad: "HEM (Halmstad)",
 };
 
 export function providerName(provider: string): string {
