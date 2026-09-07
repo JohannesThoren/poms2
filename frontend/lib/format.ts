@@ -27,6 +27,9 @@ export const PROVIDER_NAMES: Record<string, string> = {
   karlshamn: "Karlshamn Energi",
   umea: "Umeå Energi",
   halmstad: "HEM (Halmstad)",
+  hemab: "HEMAB (Härnösand)",
+  btea: "Bergs Tingslags Elektriska",
+  harryda: "Härryda Energi",
 };
 
 export function providerName(provider: string): string {

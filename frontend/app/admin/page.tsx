@@ -36,6 +36,9 @@ const KNOWN_PROVIDERS = [
   "karlshamn",
   "umea",
   "halmstad",
+  "hemab",
+  "btea",
+  "harryda",
 ];
 
 const FRESH_MS = 5 * 60 * 1000;

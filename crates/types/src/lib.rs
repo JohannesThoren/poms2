@@ -45,6 +45,9 @@ pub enum Provider {
     Karlshamn,
     Umea,
     Halmstad,
+    Hemab,
+    Btea,
+    Harryda,
 }
 
 impl Provider {
@@ -78,6 +81,9 @@ impl Provider {
             Provider::Karlshamn => "karlshamn",
             Provider::Umea => "umea",
             Provider::Halmstad => "halmstad",
+            Provider::Hemab => "hemab",
+            Provider::Btea => "btea",
+            Provider::Harryda => "harryda",
         }
     }
 }
