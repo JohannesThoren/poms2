@@ -6,6 +6,7 @@ import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
 import { OutageMap } from "@/components/OutageMap";
 import { OutageTable } from "@/components/OutageList";
 import Link from "next/link";
+import { useAutoRefresh } from "@/lib/useAutoRefresh";
 
 const FILTERABLE_STATUSES = ["fault", "planned", "upcoming"] as const;
 type FilterableStatus = (typeof FILTERABLE_STATUSES)[number];
@@ -28,6 +29,10 @@ function StatusDot({ status }: { status: string }) {
 }
 
 export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: Outage[] }) {
+  // Keeps the page live: re-fetches from the server every 30s (paused
+  // while the tab is hidden) without losing filter/sort/selection state.
+  useAutoRefresh(30_000);
+
   // "Kommande" (upcoming, not yet started) starts off by default - it's
   // the least urgent category, so hiding it keeps the view focused on
   // faults and already-ongoing planned work unless someone explicitly

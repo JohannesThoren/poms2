@@ -6,6 +6,7 @@ import type { Outage } from "@/lib/db";
 import { providerName } from "@/lib/format";
 import { OutageMap } from "@/components/OutageMap";
 import { OutageSidebarList } from "@/components/OutageList";
+import { useAutoRefresh } from "@/lib/useAutoRefresh";
 
 /**
  * NOC ("network operations center") view: the map is the primary
@@ -17,6 +18,9 @@ import { OutageSidebarList } from "@/components/OutageList";
  */
 export function NocView({ outages }: { outages: Outage[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // This view is meant to run unattended on a wall/ops screen, so it
+  // refreshes more aggressively than the main dashboard (15s vs 30s).
+  const lastRefreshed = useAutoRefresh(15_000);
 
   // "Active" here means already affecting someone right now - the same
   // definition the main dashboard uses for its "Aktuella avbrott"
@@ -58,6 +62,10 @@ export function NocView({ outages }: { outages: Outage[] }) {
           </Link>
           <span className="text-[var(--muted)]">·</span>
           <span className="text-sm text-[var(--text)]">NOC</span>
+          <span className="flex items-center gap-1.5 text-[11px] text-[var(--muted)] ml-2" title="Uppdateras automatiskt var 15:e sekund">
+            <span className="inline-block h-1.5 w-1.5 rounded-full pulse" style={{ backgroundColor: "var(--upcoming)" }} />
+            {lastRefreshed.toLocaleTimeString("sv-SE")}
+          </span>
         </div>
 
         <div className="flex items-center px-4 border-r border-[var(--line)] shrink-0">
