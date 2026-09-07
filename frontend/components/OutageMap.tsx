@@ -17,15 +17,31 @@ const STATUS_COLOR: Record<string, string> = {
 // enough that a polygon actually adds detail over the point marker.
 const POLYGON_MIN_ZOOM = 9;
 
-export function OutageMap({ outages }: { outages: Outage[] }) {
+export function OutageMap({
+  outages,
+  selectedId,
+  onSelectId,
+  className,
+}: {
+  outages: Outage[];
+  selectedId?: string | null;
+  onSelectId?: (id: string) => void;
+  className?: string;
+}) {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
   const polygonsRef = useRef<L.LayerGroup | null>(null);
-  // Kept in sync with the `outages` prop so the zoomend handler (attached
-  // once, outside React's render cycle) always sees the current list.
+  const markerById = useRef<Map<string, L.CircleMarker>>(new Map());
+  // Kept in sync with the `outages`/`onSelectId` props so the zoomend and
+  // marker click handlers (attached once, outside React's render cycle)
+  // always see the current values without re-subscribing every render.
   const outagesRef = useRef<Outage[]>(outages);
-  outagesRef.current = outages;
+  const onSelectIdRef = useRef(onSelectId);
+  useEffect(() => {
+    outagesRef.current = outages;
+    onSelectIdRef.current = onSelectId;
+  }, [outages, onSelectId]);
 
   const located = outages.filter((o) => o.lat != null && o.lng != null);
 
@@ -85,14 +101,25 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
       markersRef.current = Lmod.layerGroup().addTo(map);
 
       map.on("zoomend", () => redrawPolygons(Lmod));
+
+      // In a flex/grid layout (the NOC view) the container may not have
+      // its final height yet on the tick Leaflet measures it, which
+      // leaves the map rendered too small until the next resize.
+      const invalidate = () => map.invalidateSize();
+      window.addEventListener("resize", invalidate);
+      const t = setTimeout(invalidate, 0);
+      (map as unknown as { _cleanupInvalidate?: () => void })._cleanupInvalidate = () => {
+        window.removeEventListener("resize", invalidate);
+        clearTimeout(t);
+      };
     });
 
     return () => {
       cancelled = true;
+      (mapRef.current as unknown as { _cleanupInvalidate?: () => void } | null)?._cleanupInvalidate?.();
       mapRef.current?.remove();
       mapRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Redraw markers + polygons whenever the (filtered) outage list changes.
@@ -102,18 +129,20 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
     import("leaflet").then((Lmod) => {
       if (cancelled || !markersRef.current) return;
       markersRef.current.clearLayers();
+      markerById.current.clear();
 
       for (const o of located) {
         const color = STATUS_COLOR[o.status] ?? STATUS_COLOR.resolved;
+        const isSelected = o.id === selectedId;
         const marker = Lmod.circleMarker([o.lat as number, o.lng as number], {
-          radius: 7,
-          color,
+          radius: isSelected ? 10 : 7,
+          color: isSelected ? "#ffffff" : color,
           fillColor: color,
           // Approximate (geocoded from area name, not a real point from
           // the source) markers are shown hollow so it's clear at a
           // glance they're not precise.
           fillOpacity: o.approx ? 0.15 : 0.85,
-          weight: o.approx ? 2 : 1.5,
+          weight: isSelected ? 3 : o.approx ? 2 : 1.5,
           dashArray: o.approx ? "3,3" : undefined,
         });
 
@@ -132,7 +161,10 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
             `</div>`
         );
 
+        marker.on("click", () => onSelectIdRef.current?.(o.id));
+
         marker.addTo(markersRef.current!);
+        markerById.current.set(o.id, marker);
       }
 
       redrawPolygons(Lmod);
@@ -141,12 +173,26 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [located]);
+  }, [located, selectedId]);
+
+  // When something is selected from OUTSIDE the map (e.g. a click in the
+  // outage list), pan/zoom to it and pop its marker open - this is what
+  // makes the list and the map feel like one linked view instead of two
+  // independent ones.
+  useEffect(() => {
+    if (!selectedId) return;
+    const map = mapRef.current;
+    const marker = markerById.current.get(selectedId);
+    if (!map || !marker) return;
+    const latLng = marker.getLatLng();
+    const targetZoom = Math.max(map.getZoom(), 10);
+    map.flyTo(latLng, targetZoom, { duration: 0.6 });
+    marker.openPopup();
+  }, [selectedId]);
 
   return (
-    <div className="relative">
-      <div ref={mapDivRef} className="h-[420px] w-full rounded-none border border-[var(--line)]" />
+    <div className="relative h-full">
+      <div ref={mapDivRef} className={className ?? "h-[420px] w-full rounded-none border border-[var(--line)]"} />
       {located.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center text-sm text-[var(--muted)] bg-[var(--bg)]/60 pointer-events-none">
           Ingen av de filtrerade händelserna har koordinater

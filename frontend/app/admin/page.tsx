@@ -34,6 +34,7 @@ const KNOWN_PROVIDERS = [
   "pite",
   "harjeans",
   "karlshamn",
+  "umea",
 ];
 
 const FRESH_MS = 5 * 60 * 1000;

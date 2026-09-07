@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import type { Outage } from "@/lib/db";
 import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
 import { OutageMap } from "@/components/OutageMap";
+import { OutageTable } from "@/components/OutageList";
+import Link from "next/link";
 
 const FILTERABLE_STATUSES = ["fault", "planned", "upcoming"] as const;
 type FilterableStatus = (typeof FILTERABLE_STATUSES)[number];
@@ -25,53 +27,6 @@ function StatusDot({ status }: { status: string }) {
   );
 }
 
-function OutageTable({ outages }: { outages: Outage[] }) {
-  if (outages.length === 0) {
-    return <p className="text-sm text-[var(--muted)] py-8">Inga avbrott matchar det valda filtret.</p>;
-  }
-  return (
-    <table className="w-full text-sm border-collapse">
-      <thead>
-        <tr className="text-left text-[var(--muted)] border-b border-[var(--line)]">
-          <th className="font-normal py-2 pr-4 w-8"></th>
-          <th className="font-normal py-2 pr-4">Leverantör</th>
-          <th className="font-normal py-2 pr-4">Område</th>
-          <th className="font-normal py-2 pr-4 text-right">Kunder</th>
-          <th className="font-normal py-2 pr-4">Startade</th>
-          <th className="font-normal py-2">Beräknat klart</th>
-        </tr>
-      </thead>
-      <tbody>
-        {outages.map((o) => (
-          <tr key={o.id} className="border-b border-[var(--line)]/60 hover:bg-[var(--panel)]">
-            <td className="py-2.5 pr-4">
-              <StatusDot status={o.status} />
-            </td>
-            <td className="py-2.5 pr-4 text-[var(--text)]">{providerName(o.provider)}</td>
-            <td className="py-2.5 pr-4 text-[var(--text)]">
-              {o.area_label}
-              <span className="block text-xs text-[var(--muted)]">
-                {STATUS_LABELS[o.status]}
-                {o.lat != null && o.lng != null && (
-                  <span className="font-mono">
-                    {" "}
-                    · {o.lat.toFixed(4)}, {o.lng.toFixed(4)}
-                  </span>
-                )}
-              </span>
-            </td>
-            <td className="py-2.5 pr-4 text-right font-mono">
-              {o.affected_customers != null ? o.affected_customers.toLocaleString("sv-SE") : "—"}
-            </td>
-            <td className="py-2.5 pr-4 font-mono text-[var(--muted)]">{formatTime(o.started_at)}</td>
-            <td className="py-2.5 font-mono text-[var(--muted)]">{formatTime(o.estimated_end_at)}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
 export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: Outage[] }) {
   // "Kommande" (upcoming, not yet started) starts off by default - it's
   // the least urgent category, so hiding it keeps the view focused on
@@ -81,6 +36,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
     new Set(FILTERABLE_STATUSES.filter((s) => s !== "upcoming"))
   );
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   function toggle(status: FilterableStatus) {
     setVisible((prev) => {
@@ -133,7 +89,9 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
       <header className="flex items-end justify-between pt-10 pb-6 border-b border-[var(--line)]">
         <div>
           <h1 className="text-[15px] font-medium text-[var(--text)]">POMS2</h1>
-          <p className="text-sm text-[var(--muted)] mt-0.5">Driftläge elnät, Sverige</p>
+          <p className="text-sm text-[var(--muted)] mt-0.5">
+            Driftläge elnät, Sverige · <Link href="/noc" className="underline hover:text-[var(--text)]">NOC-vy</Link>
+          </p>
         </div>
         <div className="text-right">
           <div
@@ -196,12 +154,12 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
         <h2 className="text-sm text-[var(--muted)] mb-3">
           Karta ({located.length} av {filtered.length} har koordinater)
         </h2>
-        <OutageMap outages={filtered} />
+        <OutageMap outages={filtered} selectedId={selectedId} onSelectId={setSelectedId} />
       </section>
 
       <section className="py-6 border-b border-[var(--line)]">
         <h2 className="text-sm text-[var(--muted)] mb-3">Aktuella avbrott ({current.length})</h2>
-        <OutageTable outages={current} />
+        <OutageTable outages={current} selectedId={selectedId} onSelect={setSelectedId} />
       </section>
 
       {visible.has("upcoming") && (
@@ -214,7 +172,7 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
               </span>
             )}
           </h2>
-          <OutageTable outages={upcoming} />
+          <OutageTable outages={upcoming} selectedId={selectedId} onSelect={setSelectedId} />
         </section>
       )}
 
