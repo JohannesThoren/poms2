@@ -46,6 +46,17 @@ technically public, or because it was shared with you for review) does
 NOT by itself constitute permission for anything beyond the personal use
 described above.
 
+## Mandatory condition: modifications must be open-sourced
+
+Regardless of who you are or under which permission above you are acting
+(personal use, or a use explicitly authorized in writing by the copyright
+holder): if you modify this software in any way, you must publish the
+complete source code of your modified version, publicly and free of
+charge, under this same license. This applies even if you never
+distribute, host, or share the modified software itself with anyone —
+making changes alone is enough to trigger this requirement. You may not
+keep a modified version private.
+
 To request permission for anything else, contact the copyright holder
 directly. Permission, if granted, will be provided separately and in
 writing, and may be limited to a specific use, duration, or party.
