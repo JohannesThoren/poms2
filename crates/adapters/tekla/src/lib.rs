@@ -4,10 +4,16 @@
 //! **Sundsvall Elnät** and **Gävle Energi** (2026-09), each with their own
 //! `geoserver-api` origin and bounding box but identical endpoint shapes.
 //!
-//! Unlike Öresundskraft's outages (all in one `scopes.p`), some
-//! deployments (Gävle) split outages across multiple scope keys (`p`, `h`,
-//! ...) - this adapter merges outages and areas from every scope key it
-//! finds rather than assuming a fixed key, so it works for both shapes.
+//! `GetApplicationData` splits outages into scope keys - confirmed (via
+//! Gävle Energi, whose `h` scope carries real area data even when empty
+//! of outages) that `p` is electricity and `h` is district heating
+//! (fjärrvärme). Only `p` is used here; this project tracks electricity
+//! only. An earlier version of this adapter merged every scope key it
+//! found, which happened to be harmless only because `h` had zero active
+//! outages at the time - it would have silently reported district heating
+//! outages as electricity outages the moment that changed. Öresundskraft's
+//! own (separate, non-generic) adapter never had this bug: its `Scopes`
+//! struct only ever deserializes a fixed `p` field.
 //!
 //! One binary, one container per company (like the Digpro family) - which
 //! company to poll, and its bounding box, comes entirely from env vars in
@@ -291,13 +297,20 @@ impl Adapter for TeklaAdapter {
         let index = build_tile_index(&tiles);
 
         let mut area_labels: HashMap<i64, String> = HashMap::new();
-        let mut outages: Vec<&OutageRecord> = Vec::new();
-        for scope in appdata.scopes.values() {
-            for area in &scope.areas {
-                area_labels.insert(area.id, area.label.clone());
+        // Only the electricity scope - see the module docs for why merging
+        // every scope key (as this used to do) was a latent bug.
+        let outages: Vec<&OutageRecord> = match appdata.scopes.get("p") {
+            Some(scope) => {
+                for area in &scope.areas {
+                    area_labels.insert(area.id, area.label.clone());
+                }
+                scope.outages.iter().collect()
             }
-            outages.extend(scope.outages.iter());
-        }
+            None => {
+                tracing::warn!("no 'p' (electricity) scope in GetApplicationData response");
+                Vec::new()
+            }
+        };
 
         Ok(outages.iter().map(|o| to_event(self.provider, o, &index, &area_labels)).collect())
     }
@@ -323,7 +336,7 @@ mod tests {
     }
 
     #[test]
-    fn merges_outages_across_multiple_scope_keys() {
+    fn only_uses_electricity_scope_not_district_heating() {
         let json = r#"{
             "scopes": {
                 "p": {"areas": [{"id": 1, "label": "A"}], "outages": [{"id": 10, "cc": 5, "reason": null, "starttime": 0, "plannedstart": 0, "plannedend": 0, "estendtime": 0, "t": "u"}]},
@@ -332,14 +345,19 @@ mod tests {
         }"#;
         let appdata: AppData = serde_json::from_str(json).unwrap();
         let mut area_labels = HashMap::new();
-        let mut outages = Vec::new();
-        for scope in appdata.scopes.values() {
-            for area in &scope.areas {
-                area_labels.insert(area.id, area.label.clone());
+        let outages: Vec<&OutageRecord> = match appdata.scopes.get("p") {
+            Some(scope) => {
+                for area in &scope.areas {
+                    area_labels.insert(area.id, area.label.clone());
+                }
+                scope.outages.iter().collect()
             }
-            outages.extend(scope.outages.iter());
-        }
-        assert_eq!(outages.len(), 2, "should merge outages from both 'p' and 'h' scopes");
-        assert_eq!(area_labels.len(), 2);
+            None => Vec::new(),
+        };
+        assert_eq!(outages.len(), 1, "should only use the 'p' (electricity) scope, not 'h' (district heating)");
+        assert_eq!(outages[0].id, 10);
+        assert_eq!(area_labels.len(), 1);
+        assert!(area_labels.contains_key(&1));
+        assert!(!area_labels.contains_key(&2), "district heating area labels should not leak in");
     }
 }

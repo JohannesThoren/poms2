@@ -344,6 +344,33 @@ services:
       ingestion:
         condition: service_started
 
+  # Same Tekla/GeoServer platform - found via geoserver-api/content/StaticObjects
+  # and outageTableData.json (a simpler, non-tile "summary" API on the same
+  # backend), which confirmed this is the identical system, then verified
+  # GetApplicationData/GetObjectsByTiles work the same way as Öresundskraft
+  # and Gävle. Bounding box derived from the area polygon coordinates in
+  # StaticObjects (Jämtland county), with a small margin.
+  jamtkraft-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tekla-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      TEKLA_PROVIDER: jamtkraft
+      TEKLA_BASE_URL: https://avbrottskarta.jamtkraft.se
+      TEKLA_LAT_MIN: "62.5"
+      TEKLA_LAT_MAX: "64.3"
+      TEKLA_LNG_MIN: "11.8"
+      TEKLA_LNG_MAX: "15.5"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   skekraft-adapter:
     build:
       context: .
