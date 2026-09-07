@@ -65,7 +65,7 @@ fn map_status(code: i32) -> OutageStatus {
 /// Centroid of the polygon vertices - good enough for a map pin; we don't
 /// need the exact outline for this system.
 fn polygon_centroid(polygon: &[f64]) -> Option<(f64, f64)> {
-    if polygon.len() < 2 || polygon.len() % 2 != 0 {
+    if polygon.len() < 2 || !polygon.len().is_multiple_of(2) {
         return None;
     }
     let n = (polygon.len() / 2) as f64;
@@ -82,7 +82,7 @@ fn polygon_centroid(polygon: &[f64]) -> Option<(f64, f64)> {
 /// well-formed - `None` (not stored) rather than a degenerate 0- or
 /// 1-point "polygon" if it isn't.
 fn polygon_vertices(polygon: &[f64]) -> Option<Vec<(f64, f64)>> {
-    if polygon.len() < 6 || polygon.len() % 2 != 0 {
+    if polygon.len() < 6 || !polygon.len().is_multiple_of(2) {
         return None;
     }
     Some(polygon.chunks(2).map(|pair| (pair[0], pair[1])).collect())

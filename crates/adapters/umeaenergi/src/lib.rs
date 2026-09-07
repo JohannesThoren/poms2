@@ -150,44 +150,20 @@ fn status_for(d: &Disturbance, started_at: Option<DateTime<Utc>>, ended_at: Opti
     OutageStatus::Fault
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn parses_variable_fractional_seconds() {
-        assert!(parse_stockholm_time("2026-07-13T14:31:41").is_some());
-        assert!(parse_stockholm_time("2026-07-09T09:53:12.548").is_some());
-        assert!(parse_stockholm_time("2026-07-09T10:50:40.8714791").is_some());
-        assert!(parse_stockholm_time("").is_none());
-    }
-
-    #[test]
-    fn point_geometry_swaps_lng_lat_order() {
-        // GeoJSON gives [lng, lat]; we want (lat, lng) out.
-        let geo = GeoCoordinates::Point {
-            coordinates: (20.555, 63.904),
-        };
-        let (lat, lng) = point_lat_lng(&geo);
-        assert_eq!(lat, Some(63.904));
-        assert_eq!(lng, Some(20.555));
-        assert!(polygon_vertices(&geo).is_none());
-    }
-
-    #[test]
-    fn polygon_geometry_centroid_and_vertices() {
-        let geo = GeoCoordinates::Polygon {
-            coordinates: vec![vec![(0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)]],
-        };
-        let (lat, lng) = point_lat_lng(&geo);
-        assert_eq!(lat, Some(1.0));
-        assert_eq!(lng, Some(1.0));
-        let vertices = polygon_vertices(&geo).unwrap();
-        assert_eq!(vertices.len(), 4);
-        // vertices are (lat, lng) - first ring point (0.0, 0.0) stays (0.0, 0.0)
-        assert_eq!(vertices[1], (0.0, 2.0));
-    }
-}
+/// How long after `endDate` a resolved record is still worth reporting.
+/// The source returns its *entire* history on every request, not just
+/// active disturbances (same shape as Skellefteå Kraft's feed - see
+/// `crates/adapters/skekraft/src/lib.rs`), so without a cutoff this
+/// adapter would re-emit the same old resolved record on every 60s poll
+/// forever, each time overwriting `outages.resolved_at` with the current
+/// time (`upsert_outage` in the ingestion service always takes the
+/// latest write's `resolved_at`). That would make months-old outages look
+/// like they *just* resolved, permanently drowning out genuinely recent
+/// ones on the "senast åtgärdade" list. A record's resolution only needs
+/// reporting once, shortly after it happens - this window is comfortably
+/// wider than the 60s poll interval so the transition isn't missed, but
+/// short enough that ancient history gets dropped.
+const RESOLVED_REPORT_WINDOW: chrono::Duration = chrono::Duration::hours(2);
 
 pub struct UmeaEnergiAdapter {
     client: reqwest::Client,
@@ -227,10 +203,21 @@ impl Adapter for UmeaEnergiAdapter {
         let events = disturbances
             .into_iter()
             .filter(|d| d.domain == EL_DOMAIN)
-            .map(|d| {
+            .filter_map(|d| {
                 let started_at = d.start_date.as_deref().and_then(parse_stockholm_time);
                 let estimated_end_at = d.end_date.as_deref().and_then(parse_stockholm_time);
                 let status = status_for(&d, started_at, estimated_end_at, now);
+
+                // See RESOLVED_REPORT_WINDOW: drop anything resolved long
+                // enough ago that re-reporting it would just be noise.
+                if status == OutageStatus::Resolved {
+                    if let Some(end) = estimated_end_at {
+                        if now - end > RESOLVED_REPORT_WINDOW {
+                            return None;
+                        }
+                    }
+                }
+
                 let (lat, lng) = d
                     .geo_coordinates
                     .as_ref()
@@ -243,7 +230,7 @@ impl Adapter for UmeaEnergiAdapter {
                     .filter(|t| !t.trim().is_empty())
                     .unwrap_or_else(|| "Umeå".to_string());
 
-                RawOutageEvent {
+                Some(RawOutageEvent {
                     provider: Provider::Umea,
                     source_id: d.id.to_string(),
                     status,
@@ -256,10 +243,49 @@ impl Adapter for UmeaEnergiAdapter {
                     started_at,
                     estimated_end_at,
                     observed_at: now,
-                }
+                })
             })
             .collect();
 
         Ok(events)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_variable_fractional_seconds() {
+        assert!(parse_stockholm_time("2026-07-13T14:31:41").is_some());
+        assert!(parse_stockholm_time("2026-07-09T09:53:12.548").is_some());
+        assert!(parse_stockholm_time("2026-07-09T10:50:40.8714791").is_some());
+        assert!(parse_stockholm_time("").is_none());
+    }
+
+    #[test]
+    fn point_geometry_swaps_lng_lat_order() {
+        // GeoJSON gives [lng, lat]; we want (lat, lng) out.
+        let geo = GeoCoordinates::Point {
+            coordinates: (20.555, 63.904),
+        };
+        let (lat, lng) = point_lat_lng(&geo);
+        assert_eq!(lat, Some(63.904));
+        assert_eq!(lng, Some(20.555));
+        assert!(polygon_vertices(&geo).is_none());
+    }
+
+    #[test]
+    fn polygon_geometry_centroid_and_vertices() {
+        let geo = GeoCoordinates::Polygon {
+            coordinates: vec![vec![(0.0, 0.0), (2.0, 0.0), (2.0, 2.0), (0.0, 2.0)]],
+        };
+        let (lat, lng) = point_lat_lng(&geo);
+        assert_eq!(lat, Some(1.0));
+        assert_eq!(lng, Some(1.0));
+        let vertices = polygon_vertices(&geo).unwrap();
+        assert_eq!(vertices.len(), 4);
+        // vertices are (lat, lng) - first ring point (0.0, 0.0) stays (0.0, 0.0)
+        assert_eq!(vertices[1], (0.0, 2.0));
     }
 }

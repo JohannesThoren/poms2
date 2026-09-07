@@ -8,10 +8,10 @@
 //!
 //!   {origin}/bios/servlet/sys.outagemap.servlets.api.GetOutagesKML?app={app}_{cust}
 //!
-//! - a plain, unauthenticated GET, no API key. `{app}` is consistently
+//! A plain, unauthenticated GET, no API key. `{app}` is consistently
 //! `fpp` across every instance checked so far. Confirmed working
 //! (2026-09) against: Växjö Energi, Lerum Energi, Västerbergslagens Elnät,
-//! Partille Energi - all return the identical KML shape Kraftringen's own
+//! Partille Energi — all return the identical KML shape Kraftringen's own
 //! feed does (same style ids, same `ExtendedData` field names), so this
 //! reuses that exact parsing logic rather than re-deriving it.
 //!

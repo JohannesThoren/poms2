@@ -234,7 +234,7 @@ fn nearest_area_label<'a>(
             let d = (x - coord.0).powi(2) + (y - coord.1).powi(2);
             (d, id)
         })
-        .min_by(|a, b| a.0.partial_cmp(&b.0).unwrap())
+        .min_by(|a, b| a.0.total_cmp(&b.0))
         .and_then(|(_, id)| area_labels.get(id))
         .map(|s| s.as_str())
 }

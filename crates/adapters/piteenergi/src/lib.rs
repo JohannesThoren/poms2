@@ -44,7 +44,9 @@ fn parse_stockholm(s: &str) -> Option<DateTime<Utc>> {
     }
 }
 
-fn section_status(heading: &str) -> Option<fn(Option<DateTime<Utc>>, DateTime<Utc>) -> OutageStatus> {
+type StatusFromStart = fn(Option<DateTime<Utc>>, DateTime<Utc>) -> OutageStatus;
+
+fn section_status(heading: &str) -> Option<StatusFromStart> {
     if heading.contains("Pågående") {
         Some(|_start, _now| OutageStatus::Fault)
     } else if heading.contains("Planerade") {
