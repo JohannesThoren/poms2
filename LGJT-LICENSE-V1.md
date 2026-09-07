@@ -1,6 +1,7 @@
 # LGJT License v1
 
 Copyright (c) 2026 Johannes Thorén. All rights reserved.
+Licensed under the LGJT License v1.
 
 This license covers this repository and everything in it: code, docs, config, database schemas, and any provider-specific integration details.
 
