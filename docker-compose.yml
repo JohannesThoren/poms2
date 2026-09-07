@@ -359,6 +359,21 @@ services:
       ingestion:
         condition: service_started
 
+  umeaenergi-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: umeaenergi-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   karlstad-adapter:
     build:
       context: .

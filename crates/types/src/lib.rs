@@ -43,6 +43,7 @@ pub enum Provider {
     Pite,
     Harjeans,
     Karlshamn,
+    Umea,
 }
 
 impl Provider {
@@ -74,6 +75,7 @@ impl Provider {
             Provider::Pite => "pite",
             Provider::Harjeans => "harjeans",
             Provider::Karlshamn => "karlshamn",
+            Provider::Umea => "umea",
         }
     }
 }
