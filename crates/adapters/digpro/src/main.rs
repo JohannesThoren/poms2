@@ -22,6 +22,10 @@ fn parse_provider(name: &str) -> Provider {
         "linde" => Provider::Linde,
         "telge" => Provider::Telge,
         "uddevalla" => Provider::Uddevalla,
+        "halmstad" => Provider::Halmstad,
+        "hemab" => Provider::Hemab,
+        "btea" => Provider::Btea,
+        "harryda" => Provider::Harryda,
         other => panic!("unknown DIGPRO_PROVIDER: {other}"),
     }
 }

@@ -34,6 +34,11 @@ const KNOWN_PROVIDERS = [
   "pite",
   "harjeans",
   "karlshamn",
+  "umea",
+  "halmstad",
+  "hemab",
+  "btea",
+  "harryda",
 ];
 
 const FRESH_MS = 5 * 60 * 1000;

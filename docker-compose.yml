@@ -344,11 +344,53 @@ services:
       ingestion:
         condition: service_started
 
+  # Same Tekla/GeoServer platform - found via geoserver-api/content/StaticObjects
+  # and outageTableData.json (a simpler, non-tile "summary" API on the same
+  # backend), which confirmed this is the identical system, then verified
+  # GetApplicationData/GetObjectsByTiles work the same way as Öresundskraft
+  # and Gävle. Bounding box derived from the area polygon coordinates in
+  # StaticObjects (Jämtland county), with a small margin.
+  jamtkraft-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tekla-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      TEKLA_PROVIDER: jamtkraft
+      TEKLA_BASE_URL: https://avbrottskarta.jamtkraft.se
+      TEKLA_LAT_MIN: "62.5"
+      TEKLA_LAT_MAX: "64.3"
+      TEKLA_LNG_MIN: "11.8"
+      TEKLA_LNG_MAX: "15.5"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   skekraft-adapter:
     build:
       context: .
       dockerfile: Dockerfile
       target: skekraft-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  umeaenergi-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: umeaenergi-adapter
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://poms:poms@postgres:5432/poms
@@ -422,6 +464,84 @@ services:
       DIGPRO_PROVIDER: uddevalla
       DIGPRO_BASE_URL: https://nisweb.uddevallaenergi.se
       DIGPRO_CUST: udd
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  halmstad-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: digpro-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: halmstad
+      DIGPRO_BASE_URL: https://dpwebmap.hem.se
+      DIGPRO_CUST: hsd
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  # These three were wrongly marked "down" earlier - the sandbox this
+  # project is developed in egresses from a US Google Cloud IP, which
+  # these systems apparently block/blackhole as anti-scraping. Confirmed
+  # working (HTTP 200) from a real Swedish browser. They'll work fine
+  # once actually deployed on real infrastructure, which won't have this
+  # problem - see README.md's "Korrigering" note.
+  hemab-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: digpro-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: hemab
+      DIGPRO_BASE_URL: https://dpwebmap.hemab.se
+      DIGPRO_CUST: hem
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  btea-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: digpro-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: btea
+      DIGPRO_BASE_URL: https://dpweb.btea.se
+      DIGPRO_CUST: bte
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
+  harryda-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: digpro-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      DIGPRO_PROVIDER: harryda
+      DIGPRO_BASE_URL: https://instwebb.harrydaenergi.se
+      DIGPRO_CUST: hra
     depends_on:
       postgres:
         condition: service_healthy

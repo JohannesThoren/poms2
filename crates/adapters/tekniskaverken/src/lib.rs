@@ -222,6 +222,6 @@ mod tests {
         // Fixture is known to contain both Electricity and DistrictHeating -
         // only Electricity should survive the filter.
         assert!(events.len() < response.outages.len());
-        assert!(events.len() > 0);
+        assert!(!events.is_empty());
     }
 }

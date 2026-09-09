@@ -28,8 +28,8 @@
 //! before the window → upcoming, inside it → planned/fault (guessed from
 //! whether the title says "Planerat"), after it → resolved. No live
 //! electricity outage was available to validate this heuristic against
-//! when it was written (only district heating/fiber messages were active)
-//! - treat the fault/planned split with proportionally more suspicion
+//! when it was written (only district heating/fiber messages were active),
+//! so treat the fault/planned split with proportionally more suspicion
 //! than other adapters until it's checked against a real one.
 
 use async_trait::async_trait;

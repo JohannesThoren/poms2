@@ -16,6 +16,7 @@ fn parse_provider(name: &str) -> Provider {
         "oresundskraft" => Provider::Oresundskraft,
         "gavle" => Provider::Gavle,
         "harjeans" => Provider::Harjeans,
+        "jamtkraft" => Provider::Jamtkraft,
         other => panic!("unknown TEKLA_PROVIDER: {other}"),
     }
 }
