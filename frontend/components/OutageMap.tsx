@@ -45,6 +45,11 @@ export function OutageMap({ outages }: { outages: Outage[] }) {
         weight: 1.5,
         fillColor: color,
         fillOpacity: 0.2,
+        // Purely visual context for the point marker at the same spot -
+        // without this, clicking anywhere inside the shaded area (which
+        // is often most of what's visible) hits the polygon instead of
+        // the marker underneath, and the popup never opens.
+        interactive: false,
       }).addTo(group);
     }
   }
