@@ -8,6 +8,18 @@ RUN npm ci
 COPY frontend/ ./
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
+# NEXT_PUBLIC_* vars are inlined into the client bundle at build time, not
+# read at container runtime - they have to be build ARGs, not just
+# environment: in docker-compose.yml. All optional; ads simply don't
+# render if these are blank (see components/AdSlot.tsx).
+ARG NEXT_PUBLIC_ADSENSE_CLIENT_ID
+ARG NEXT_PUBLIC_AD_SLOT_TOP
+ARG NEXT_PUBLIC_AD_SLOT_LEFT
+ARG NEXT_PUBLIC_AD_SLOT_RIGHT
+ENV NEXT_PUBLIC_ADSENSE_CLIENT_ID=${NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+ENV NEXT_PUBLIC_AD_SLOT_TOP=${NEXT_PUBLIC_AD_SLOT_TOP}
+ENV NEXT_PUBLIC_AD_SLOT_LEFT=${NEXT_PUBLIC_AD_SLOT_LEFT}
+ENV NEXT_PUBLIC_AD_SLOT_RIGHT=${NEXT_PUBLIC_AD_SLOT_RIGHT}
 RUN npm run build
 
 FROM node:22-slim

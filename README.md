@@ -51,6 +51,19 @@ ADMIN_SESSION_SECRET=<kör: openssl rand -hex 32>
 
 Logga sedan in på `/admin` med samma användarnamn/lösenord du loggar in på servern med. `frontend`-containern monterar hostens `/etc/passwd`, `/etc/shadow` och `/etc/group` read-only och verifierar via PAM - den har ingen egen kopia av lösenorden.
 
+## Annonser (valfritt)
+
+Dashboarden kan visa en topp-banner och två sido-banners (Google AdSense) - helt av som standard, syns inte alls förrän du konfigurerar det. Lägg till i din `.env`:
+
+```
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX
+NEXT_PUBLIC_AD_SLOT_TOP=<annons-enhets-id>
+NEXT_PUBLIC_AD_SLOT_LEFT=<annons-enhets-id>
+NEXT_PUBLIC_AD_SLOT_RIGHT=<annons-enhets-id>
+```
+
+Kräver ett godkänt AdSense-konto (skapa annonsenheter i deras gränssnitt, klistra in slot-ID:na ovan). `/ads.txt` genereras automatiskt från client-ID:t. Sido-bannerna visas bara på breda skärmar (≥ xl-brytpunkt) - på mobil/surfplatta får dashboarden all bredd. Bygg om frontend efter att ha ändrat dessa (`NEXT_PUBLIC_*`-variabler bakas in i klientbunten vid byggtillfället, inte körtid).
+
 ## Status
 
 - [x] Grundarkitektur (types, db, adapter-sdk, ingestion)

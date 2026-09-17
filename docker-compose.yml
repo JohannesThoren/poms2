@@ -571,6 +571,13 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+        # Optional AdSense config - blank is fine, ads just don't render
+        # (see components/AdSlot.tsx). Set these in a .env file next to
+        # this compose file if/when you want ads live.
+        NEXT_PUBLIC_ADSENSE_CLIENT_ID: ${NEXT_PUBLIC_ADSENSE_CLIENT_ID:-}
+        NEXT_PUBLIC_AD_SLOT_TOP: ${NEXT_PUBLIC_AD_SLOT_TOP:-}
+        NEXT_PUBLIC_AD_SLOT_LEFT: ${NEXT_PUBLIC_AD_SLOT_LEFT:-}
+        NEXT_PUBLIC_AD_SLOT_RIGHT: ${NEXT_PUBLIC_AD_SLOT_RIGHT:-}
     restart: unless-stopped
     ports:
       - "3001:3000"
