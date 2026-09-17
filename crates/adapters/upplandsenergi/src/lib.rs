@@ -155,8 +155,15 @@ impl Adapter for UpplandsEnergiAdapter {
     }
 
     async fn poll(&self) -> anyhow::Result<Vec<RawOutageEvent>> {
-        let interruptions: Vec<Interruption> =
-            self.client.get(INTERRUPTIONS_URL).send().await?.json().await?;
+        // Same Windows-1252-not-UTF-8 quirk as `fetch_areas` below -
+        // `interruptions.json` only showed this once a real interruption
+        // with å/ä/ö in its message/area text existed; it was empty (`[]`,
+        // pure ASCII) the whole time this adapter was first written and
+        // tested, so `.json()`'s strict UTF-8 assumption went unnoticed
+        // until production hit a real one.
+        let bytes = self.client.get(INTERRUPTIONS_URL).send().await?.bytes().await?;
+        let (decoded, _, _) = encoding_rs::WINDOWS_1252.decode(&bytes);
+        let interruptions: Vec<Interruption> = serde_json::from_str(&decoded)?;
         if interruptions.is_empty() {
             return Ok(Vec::new());
         }

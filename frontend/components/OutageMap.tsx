@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type L from "leaflet";
 import type { Outage } from "@/lib/db";
-import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
+import { providerName, providerSourceUrl, STATUS_LABELS, formatTime } from "@/lib/format";
 
 const STATUS_COLOR: Record<string, string> = {
   fault: "#e5484d",
@@ -45,6 +45,30 @@ export function OutageMap({
 
   const located = outages.filter((o) => o.lat != null && o.lng != null);
 
+  function popupHtml(o: Outage): string {
+    const color = STATUS_COLOR[o.status] ?? STATUS_COLOR.resolved;
+    const customers = o.affected_customers != null ? `${o.affected_customers.toLocaleString("sv-SE")} kunder` : "";
+    const approxNote = o.approx
+      ? `<br/><span style="color:#888;font-size:11px">Ungefärlig position (ortnamn)</span>`
+      : "";
+    const sourceUrl = providerSourceUrl(o.provider);
+    const sourceLink = sourceUrl
+      ? `<br/><a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7;font-size:11px">Källa: ${providerName(o.provider)} ↗</a>`
+      : "";
+
+    return (
+      `<div style="font-family:sans-serif;font-size:13px;min-width:160px">` +
+      `<strong>${providerName(o.provider)}</strong><br/>` +
+      `${o.area_label}<br/>` +
+      `<span style="color:${color}">${STATUS_LABELS[o.status] ?? o.status}</span>` +
+      (customers ? ` &middot; ${customers}` : "") +
+      `<br/><span style="color:#888">Startade ${formatTime(o.started_at)}</span>` +
+      approxNote +
+      sourceLink +
+      `</div>`
+    );
+  }
+
   function redrawPolygons(Lmod: typeof L) {
     const group = polygonsRef.current;
     const map = mapRef.current;
@@ -56,17 +80,21 @@ export function OutageMap({
     for (const o of outagesRef.current) {
       if (!o.polygon || o.polygon.length < 3) continue;
       const color = STATUS_COLOR[o.status] ?? STATUS_COLOR.resolved;
-      Lmod.polygon(o.polygon, {
+      const polygon = Lmod.polygon(o.polygon, {
         color,
         weight: 1.5,
         fillColor: color,
+        // A polygon covers far more screen area than the ~14px point
+        // marker at its center - if it's non-interactive, clicking
+        // anywhere in that (usually much bigger) shaded area does
+        // nothing, which reads as "I can't click the outage" even though
+        // the tiny dot technically still works. Interactive + same
+        // popup/click behaviour as the marker makes the whole shape a
+        // fair click target instead of requiring pixel-precision.
         fillOpacity: 0.2,
-        // Purely visual context for the point marker at the same spot -
-        // without this, clicking anywhere inside the shaded area (which
-        // is often most of what's visible) hits the polygon instead of
-        // the marker underneath, and the popup never opens.
-        interactive: false,
-      }).addTo(group);
+      }).bindPopup(popupHtml(o));
+      polygon.on("click", () => onSelectIdRef.current?.(o.id));
+      polygon.addTo(group);
     }
   }
 
@@ -151,20 +179,7 @@ export function OutageMap({
           dashArray: o.approx ? "3,3" : undefined,
         });
 
-        const customers =
-          o.affected_customers != null ? `${o.affected_customers.toLocaleString("sv-SE")} kunder` : "";
-        const approxNote = o.approx ? `<br/><span style="color:#888;font-size:11px">Ungefärlig position (ortnamn)</span>` : "";
-
-        marker.bindPopup(
-          `<div style="font-family:sans-serif;font-size:13px;min-width:160px">` +
-            `<strong>${providerName(o.provider)}</strong><br/>` +
-            `${o.area_label}<br/>` +
-            `<span style="color:${color}">${STATUS_LABELS[o.status] ?? o.status}</span>` +
-            (customers ? ` &middot; ${customers}` : "") +
-            `<br/><span style="color:#888">Startade ${formatTime(o.started_at)}</span>` +
-            approxNote +
-            `</div>`
-        );
+        marker.bindPopup(popupHtml(o));
 
         marker.on("click", () => onSelectIdRef.current?.(o.id));
 

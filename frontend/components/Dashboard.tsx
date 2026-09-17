@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Outage } from "@/lib/db";
-import { providerName, STATUS_LABELS, formatTime } from "@/lib/format";
+import { providerName, providerSourceUrl, STATUS_LABELS, formatTime } from "@/lib/format";
 import { OutageMap } from "@/components/OutageMap";
 import { OutageTable } from "@/components/OutageList";
 import Link from "next/link";
@@ -148,7 +148,20 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
             key={p.provider}
             className="py-4 pr-8 mr-8 border-r border-[var(--line)] last:border-r-0 last:mr-0 last:pr-0"
           >
-            <div className="text-sm text-[var(--text)]">{providerName(p.provider)}</div>
+            <div className="text-sm text-[var(--text)]">
+              {providerName(p.provider)}
+              {providerSourceUrl(p.provider) && (
+                <a
+                  href={providerSourceUrl(p.provider)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1.5 text-[var(--muted)] hover:text-[var(--upcoming)]"
+                  title={`Källa: ${providerName(p.provider)}s egen driftkarta`}
+                >
+                  ↗
+                </a>
+              )}
+            </div>
             <div className="font-mono text-xl mt-1">{p.active_count}</div>
             <div className="text-xs text-[var(--muted)]">{p.total_customers.toLocaleString("sv-SE")} kunder</div>
           </div>
