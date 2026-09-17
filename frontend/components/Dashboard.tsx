@@ -96,6 +96,10 @@ export function Dashboard({ outages, resolved }: { outages: Outage[]; resolved: 
           <h1 className="text-[15px] font-medium text-[var(--text)]">POMS2</h1>
           <p className="text-sm text-[var(--muted)] mt-0.5">
             Driftläge elnät, Sverige · <Link href="/noc" className="underline hover:text-[var(--text)]">NOC-vy</Link>
+            {" · "}
+            <Link href="/om" className="underline hover:text-[var(--text)]">Om</Link>
+            {" · "}
+            <Link href="/for-natagare" className="underline hover:text-[var(--text)]">För nätägare</Link>
           </p>
         </div>
         <div className="text-right">
