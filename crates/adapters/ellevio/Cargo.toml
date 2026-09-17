@@ -2,6 +2,7 @@
 name = "poms-adapter-ellevio"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "ellevio-adapter"

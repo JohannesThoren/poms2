@@ -2,6 +2,7 @@
 name = "poms-types"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [dependencies]
 serde.workspace = true

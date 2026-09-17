@@ -2,6 +2,7 @@
 name = "poms-ingestion"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [dependencies]
 poms-types = { path = "../../crates/types" }

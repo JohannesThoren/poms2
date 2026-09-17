@@ -99,3 +99,11 @@ Kräver ett godkänt AdSense-konto (skapa annonsenheter i deras gränssnitt, kli
 - [ ] Kalmar Energi använder bara en manuellt uppdaterad Google My Maps-karta, ingen realtids-API - troligen inte värt att bygga adapter för
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
 - [ ] Frontend
+
+## License
+
+Copyright (c) 2026 Johannes Thorén. All rights reserved.
+
+Licensed under the [LGJT License v1](LICENSE). Personal, non-commercial use
+only. Anything else requires written permission: johannes@lgjt.xyz
+

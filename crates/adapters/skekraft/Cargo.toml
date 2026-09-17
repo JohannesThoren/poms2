@@ -2,6 +2,7 @@
 name = "poms-adapter-skekraft"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "skekraft-adapter"

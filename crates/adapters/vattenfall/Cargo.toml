@@ -2,6 +2,7 @@
 name = "poms-adapter-vattenfall"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "vattenfall-adapter"

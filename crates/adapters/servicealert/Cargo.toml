@@ -2,6 +2,7 @@
 name = "poms-adapter-servicealert"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "servicealert-adapter"

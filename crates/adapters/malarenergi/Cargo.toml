@@ -2,6 +2,7 @@
 name = "poms-adapter-malarenergi"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "malarenergi-adapter"

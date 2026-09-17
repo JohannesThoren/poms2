@@ -2,6 +2,7 @@
 name = "poms-adapter-digpro"
 edition.workspace = true
 version.workspace = true
+license-file.workspace = true
 
 [[bin]]
 name = "digpro-adapter"
