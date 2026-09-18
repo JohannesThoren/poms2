@@ -37,6 +37,7 @@ const KNOWN_PROVIDERS = [
   "umea",
   "gotland",
   "herrljunga",
+  "falbygden",
   "halmstad",
   "hemab",
   "btea",

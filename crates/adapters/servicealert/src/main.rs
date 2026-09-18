@@ -14,6 +14,7 @@ fn parse_provider(name: &str) -> Provider {
         "tranas" => Provider::Tranas,
         "uddevalla" => Provider::Uddevalla,
         "hoganas" => Provider::Hoganas,
+        "falbygden" => Provider::Falbygden,
         other => panic!("unknown SERVICEALERT_PROVIDER: {other}"),
     }
 }

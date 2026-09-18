@@ -50,6 +50,7 @@ pub enum Provider {
     Harryda,
     Gotland,
     Herrljunga,
+    Falbygden,
 }
 
 impl Provider {
@@ -88,6 +89,7 @@ impl Provider {
             Provider::Harryda => "harryda",
             Provider::Gotland => "gotland",
             Provider::Herrljunga => "herrljunga",
+            Provider::Falbygden => "falbygden",
         }
     }
 }

@@ -595,6 +595,23 @@ services:
       ingestion:
         condition: service_started
 
+  falbygden-adapter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: servicealert-adapter
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://poms:poms@postgres:5432/poms
+      RUST_LOG: info
+      SERVICEALERT_PROVIDER: falbygden
+      SERVICEALERT_CUSTOMER_ID: f31615cb-05e1-4fb4-9cef-f66bdc7987ab
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ingestion:
+        condition: service_started
+
   frontend:
     build:
       context: .

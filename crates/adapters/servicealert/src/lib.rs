@@ -16,7 +16,15 @@
 //! ```
 //!
 //! The response groups messages by utility type (`profileTitle`: "Elnät",
-//! "Fjärrvärme", "Fibernät", ...) - this adapter only keeps "Elnät".
+//! "Fjärrvärme", "Fibernät", ...) - this adapter only keeps electricity
+//! ones. Some customers (e.g. Falbygdens Energi) split electricity into
+//! two separate profiles instead of one - "Elnät planerade avbrott" and
+//! "Elnät akuta avbrott" - and the second one's `profileName` is "Info",
+//! not "Elnät", so matching on `profileName` alone misses it entirely.
+//! Only `profileTitle` reliably contains "Elnät" across every customer
+//! seen so far, and only as a substring (not always the whole title), so
+//! this checks for that substring rather than requiring an exact
+//! "Elnät" == title match.
 //!
 //! **Known data-quality caveat**, worth remembering before trusting this
 //! provider's status field: unlike every other source in this system,
@@ -41,7 +49,7 @@ use serde::Deserialize;
 use serde_json::json;
 
 const ENDPOINT: &str = "https://se.sms-service.dk/api/WebMessage/GetDriftstatusWebMessagesMapModel";
-const ELNAT_PROFILE_TITLE: &str = "Elnät";
+const ELNAT_KEYWORD: &str = "Elnät";
 
 #[derive(Debug, Deserialize)]
 struct MapModel {
@@ -189,7 +197,7 @@ impl Adapter for ServiceAlertAdapter {
         let events = model
             .profiles
             .iter()
-            .filter(|p| p.profile_title.as_deref() == Some(ELNAT_PROFILE_TITLE))
+            .filter(|p| p.profile_title.as_deref().is_some_and(|t| t.contains(ELNAT_KEYWORD)))
             .flat_map(|p| p.web_messages.iter())
             .map(|m| to_event(self.provider, m, now))
             .collect();
@@ -277,12 +285,33 @@ mod tests {
         let elnat_count = model
             .profiles
             .iter()
-            .filter(|p| p.profile_title.as_deref() == Some(ELNAT_PROFILE_TITLE))
+            .filter(|p| p.profile_title.as_deref().is_some_and(|t| t.contains(ELNAT_KEYWORD)))
             .map(|p| p.web_messages.len())
             .sum::<usize>();
         // The captured fixture has no active Elnät messages (only
         // Fjärrvärme/Fibernät were live) - this just confirms the filter
         // doesn't crash and correctly finds zero, not some other count.
         assert_eq!(elnat_count, 0);
+    }
+
+    #[test]
+    fn split_profile_customer_matches_both_elnat_profiles() {
+        // Falbygdens Energi splits electricity into two profiles instead
+        // of one - "Elnät planerade avbrott" (profileName "Elnät") and
+        // "Elnät akuta avbrott" (profileName "Info", not "Elnät"!). The
+        // real regression this guards: filtering on profileName, or on
+        // an exact profileTitle == "Elnät", would silently drop the
+        // second profile forever.
+        let json_str = include_str!("../tests/fixtures/falbygden_split_profile.json");
+        let model: MapModel = serde_json::from_str(json_str).unwrap();
+        let matched: Vec<&str> = model
+            .profiles
+            .iter()
+            .filter(|p| p.profile_title.as_deref().is_some_and(|t| t.contains(ELNAT_KEYWORD)))
+            .filter_map(|p| p.profile_title.as_deref())
+            .collect();
+        assert_eq!(matched.len(), 2, "expected both split Elnät profiles to match, got {matched:?}");
+        assert!(matched.contains(&"Elnät planerade avbrott"));
+        assert!(matched.contains(&"Elnät akuta avbrott"));
     }
 }

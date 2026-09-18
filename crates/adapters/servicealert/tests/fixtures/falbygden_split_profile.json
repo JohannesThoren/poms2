@@ -1,0 +1,40 @@
+{
+  "countryId": 2,
+  "customerSettings": {
+    "mapLayerId": 192,
+    "mapZoomLevel": 106,
+    "defaultMapCenterCoords": {
+      "lat": 58.15359878540039,
+      "lng": 13.564240455627441
+    },
+    "hasSearchInput": false,
+    "showInfoOnHover": false,
+    "showInfoAndZoomOnClick": true,
+    "showLegend": true,
+    "showPolygons": false,
+    "useAreaCirclesInsteadOfSingleAddressMarkers": true,
+    "showArchiveDays": null,
+    "showClusterMarkers": false,
+    "id": 91
+  },
+  "profileSettingsAndMessages": [
+    {
+      "id": 430,
+      "profileName": "Elnät",
+      "profileTitle": "Elnät planerade avbrott",
+      "cssColor": "Black",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/lightning-bulb.png",
+      "sortOrder": null,
+      "webMessages": []
+    },
+    {
+      "id": 433,
+      "profileName": "Info",
+      "profileTitle": "Elnät akuta avbrott",
+      "cssColor": "Red",
+      "mapIconUrl": "/StaticFiles/images/MapIcons/power-plug-2.png",
+      "sortOrder": null,
+      "webMessages": []
+    }
+  ]
+}
