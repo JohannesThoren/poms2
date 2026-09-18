@@ -37,6 +37,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
        target/release/skekraft-adapter \
        target/release/umeaenergi-adapter \
        target/release/gotland-adapter \
+       target/release/herrljunga-adapter \
        /build/bin/
 
 # --- one thin final stage per binary ---
@@ -115,3 +116,7 @@ ENTRYPOINT ["/usr/local/bin/umeaenergi-adapter"]
 FROM runtime-base AS gotland-adapter
 COPY --from=builder /build/bin/gotland-adapter /usr/local/bin/gotland-adapter
 ENTRYPOINT ["/usr/local/bin/gotland-adapter"]
+
+FROM runtime-base AS herrljunga-adapter
+COPY --from=builder /build/bin/herrljunga-adapter /usr/local/bin/herrljunga-adapter
+ENTRYPOINT ["/usr/local/bin/herrljunga-adapter"]
