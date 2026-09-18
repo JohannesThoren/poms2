@@ -48,6 +48,7 @@ pub enum Provider {
     Hemab,
     Btea,
     Harryda,
+    Gotland,
 }
 
 impl Provider {
@@ -84,6 +85,7 @@ impl Provider {
             Provider::Hemab => "hemab",
             Provider::Btea => "btea",
             Provider::Harryda => "harryda",
+            Provider::Gotland => "gotland",
         }
     }
 }
