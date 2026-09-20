@@ -45,14 +45,14 @@ export type Outage = {
 /** Fills in a best-effort lat/lng for any row missing one, from its
  * area_label - see `lib/geocode.ts`. Rows that already have real
  * coordinates are left untouched. */
-function withGeocodedFallback<T extends { lat: number | null; lng: number | null; area_label: string }>(
+function withGeocodedFallback<T extends { lat: number | null; lng: number | null; area_label: string; provider: string }>(
   rows: T[]
 ): (T & { approx: boolean })[] {
   return rows.map((row) => {
     if (row.lat != null && row.lng != null) {
       return { ...row, approx: false };
     }
-    const geocoded = geocodeAreaLabel(row.area_label);
+    const geocoded = geocodeAreaLabel(row.area_label, row.provider);
     if (!geocoded) {
       return { ...row, approx: false };
     }
