@@ -24,6 +24,14 @@ const PROVIDER_HOMETOWN: Record<string, string> = {
   btea: "berg",
   hemab: "härnösand",
   gotland: "gotland",
+  norrtalje: "norrtälje",
+  falbygden: "falköping",
+  sandviken: "sandviken",
+  vanerenergi: "vänersborg",
+  kungalv: "kungälv",
+  skurup: "skurup",
+  ovikenergi: "örnsköldsvik",
+  landskrona: "landskrona",
 };
 
 function normalize(s: string): string {
