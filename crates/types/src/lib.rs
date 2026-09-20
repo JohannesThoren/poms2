@@ -51,6 +51,7 @@ pub enum Provider {
     Gotland,
     Herrljunga,
     Falbygden,
+    Sandviken,
 }
 
 impl Provider {
@@ -90,6 +91,7 @@ impl Provider {
             Provider::Gotland => "gotland",
             Provider::Herrljunga => "herrljunga",
             Provider::Falbygden => "falbygden",
+            Provider::Sandviken => "sandviken",
         }
     }
 }
