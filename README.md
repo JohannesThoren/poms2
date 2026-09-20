@@ -110,7 +110,7 @@ Kräver ett godkänt AdSense-konto (skapa annonsenheter i deras gränssnitt, kli
 - [x] Västra Orusts Energitjänst-adapter (`voe.se/mirakel/news.json`, eget "Mirakel"-system) - riktiga UTC-tider, ingen DST-gissning, men saknar kundantal helt
 - [ ] Skövde Energi: hittade en tredje integrationsstil (WordPress-plugin som proxar samma bakomliggande tjänst), men svaret är tomt just nu så fältnamnen är overifierade - bygg när skarp data finns
 - [ ] Karlskoga Elnät: ingen API hittad vid snabb koll, kan behöva mer interaktion (scroll/klick) för att trigga kartladdning
-- [ ] Kalmar Energi använder bara en manuellt uppdaterad Google My Maps-karta, ingen realtids-API - troligen inte värt att bygga adapter för
+- [x] **Kalmar Energi** - den bästa källan i hela projektet: `outage` är en riktig WordPress custom post type registrerad för REST API:et (`/wp-json/wp/v2/outages`), med ACF (Advanced Custom Fields) som ger riktig strukturerad data - riktiga koordinater, ISO-tidsstämplar, ett stabilt UUID - inget att gissa i fritext. Ingen HTML-skrapning alls behövs. Kategori/typ kommer från `class_list`-taxonomitaggar (`outage_type-elnat`, `outage_info_type-driftstorning`/`planerat-avbrott`) snarare än numeriska ACF-fält utan uppslagstabell. Status finns inte som fält - beräknas från start/sluttid mot nuvarande tid, samma princip som Vattenfalls uppdelning. (Den gamla noteringen om en Google My Maps-karta gällde tydligen bara en äldre/annan sida - denna WordPress-lösning är separat och mycket bättre.) Verifierat live: riktiga koordinater och korrekt tidszonskonvertering (svensk sommartid → UTC).
 - [ ] E.ON blockerat av Cloudflare-botskydd - inget vi försöker kringgå
 - [ ] Frontend
 
