@@ -43,6 +43,7 @@ const KNOWN_PROVIDERS = [
   "kungalv",
   "skurup",
   "ovikenergi",
+  "landskrona",
   "halmstad",
   "hemab",
   "btea",
