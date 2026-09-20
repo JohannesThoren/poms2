@@ -40,6 +40,7 @@ const KNOWN_PROVIDERS = [
   "falbygden",
   "sandviken",
   "vanerenergi",
+  "kungalv",
   "halmstad",
   "hemab",
   "btea",
