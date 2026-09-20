@@ -44,6 +44,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
        target/release/skurup-adapter \
        target/release/ovikenergi-adapter \
        target/release/landskrona-adapter \
+       target/release/norrtalje-adapter \
        /build/bin/
 
 # --- one thin final stage per binary ---
@@ -150,3 +151,7 @@ ENTRYPOINT ["/usr/local/bin/ovikenergi-adapter"]
 FROM runtime-base AS landskrona-adapter
 COPY --from=builder /build/bin/landskrona-adapter /usr/local/bin/landskrona-adapter
 ENTRYPOINT ["/usr/local/bin/landskrona-adapter"]
+
+FROM runtime-base AS norrtalje-adapter
+COPY --from=builder /build/bin/norrtalje-adapter /usr/local/bin/norrtalje-adapter
+ENTRYPOINT ["/usr/local/bin/norrtalje-adapter"]

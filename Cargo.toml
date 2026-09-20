@@ -28,6 +28,7 @@ members = [
     "crates/adapters/skurup",
     "crates/adapters/ovikenergi",
     "crates/adapters/landskrona",
+    "crates/adapters/norrtalje",
     "services/ingestion",
 ]
 
