@@ -25,6 +25,7 @@ members = [
     "crates/adapters/sandviken",
     "crates/adapters/vanerenergi",
     "crates/adapters/kungalv",
+    "crates/adapters/skurup",
     "services/ingestion",
 ]
 
